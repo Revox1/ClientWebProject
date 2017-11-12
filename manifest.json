@@ -1,0 +1,20 @@
+{
+  "name": "Interacting with an Image",
+  "version": "0.0.1",
+  "description": "Not yet available",
+  "browser_action": {
+    "default_icon": {
+      "16": "images/icon16.png",
+      "24": "images/icon24.png",
+      "32": "images/icon32.png"
+    },
+    "default_title": "Interacting with an Image",
+    // shown in tooltip
+    "default_popup": "html_files/popup.html"
+  },
+  "offline_enabled": true,
+  "permissions": [
+    "storage"
+  ],
+  "manifest_version": 2
+}
