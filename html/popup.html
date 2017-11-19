@@ -2,10 +2,31 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
+    <link rel="stylesheet" type="text/css" href="/css/popup.css">
     <title>Title</title>
 </head>
-<body style="height: 30px;width: 30px">
-<p>hi there!</p>
+<body >
+<h1>IWAI Extension</h1>
+<div class="enableDisableSection">
+	<p>Enable/Disable extension</p>
+	<div class="onoffswitch">
+    	<input type="checkbox" name="onoffswitch" class="onoffswitch-checkbox" id="myonoffswitch" checked>
+    	<label class="onoffswitch-label" for="myonoffswitch">
+        	<span class="onoffswitch-inner"></span>
+        	<span class="onoffswitch-switch"></span>
+    	</label>
+	</div>
+</div>
 
+<div class="choseSection">
+	<p>Choose action
+	<div class="hovershortcutswitch">
+    	<input type="checkbox" name="hovershortcutswitch" class="hovershortcutswitch-checkbox" id="myhovershortcutswitch" checked>
+    	<label class="hovershortcutswitch-label" for="myhovershortcutswitch">
+        	<span class="hovershortcutswitch-inner"></span>
+        	<span class="hovershortcutswitch-switch"></span>
+    	</label>
+	</div>
+</div>
 </body>
 </html>
