@@ -3,7 +3,6 @@ function findAncestor(el, cls) {
     return el;
 }
 
-
 function httpGetAsynca(theUrl, callback) {
     var xmlHttp = new XMLHttpRequest();
     xmlHttp.onreadystatechange = function () {
@@ -14,6 +13,53 @@ function httpGetAsynca(theUrl, callback) {
     xmlHttp.send(null);
 }
 
+function positionPopupOnPage( event,popover ) {
+    var scrollLeft = (window.pageXOffset !== undefined) ? window.pageXOffset : (document.documentElement || document.body.parentNode || document.body).scrollLeft;
+    var scrollTop = (window.pageYOffset !== undefined) ? window.pageYOffset : (document.documentElement || document.body.parentNode || document.body).scrollTop;
+    var vpWH = [];
+    var vpW, vpH;
+    var intCoordX = event.clientX ;
+    var intCoordY = event.clientY;
+    var intXOffset = intCoordX;
+    var intYOffset = intCoordY;
+
+    vpWH = getViewPortWidthHeight();
+    vpW = vpWH[0];
+    vpH = vpWH[1];
+
+    popover.style.display = 'block';
+    if ( intCoordX > vpW/2 ) { intXOffset -= popover.offsetWidth; }
+    if ( intCoordY > vpH/2 ) { intYOffset -= popover.offsetHeight; }
+
+
+    popover.style.top = (intYOffset+scrollTop) + 'px';
+    popover.style.left = (intXOffset+scrollLeft) + 'px';
+
+}	// end fn positionPopupOnPage
+
+function getViewPortWidthHeight() {
+
+    var viewPortWidth;
+    var viewPortHeight;
+
+    if (typeof window.innerWidth !== undefined)
+    {
+        viewPortWidth = window.innerWidth;
+        viewPortHeight = window.innerHeight;
+    }
+
+    // IE6 in standards compliant mode (i.e. with a valid doctype as the
+    // first line in the document)
+    else if (typeof document.documentElement !== undefined && typeof document.documentElement.clientWidth !== undefined && document.documentElement.clientWidth !==0)
+    {
+        viewPortWidth = document.documentElement.clientWidth;
+        viewPortHeight = document.documentElement.clientHeight;
+    }
+
+    return [viewPortWidth, viewPortHeight];
+}	// end fn getViewPortWidthHeight
+
+
 window.onload = function () {
     var current_popover;
 
@@ -21,7 +67,6 @@ window.onload = function () {
 
         var inject = document.createElement("div");
         inject.id = constants.popoverID;
-        // inject.innerHTML = data;
         document.body.insertBefore(inject, document.body.firstChild);
 
         var shadow = document.getElementById(constants.popoverID).createShadowRoot();
@@ -35,17 +80,18 @@ window.onload = function () {
 
             window.addEventListener("mouseover", function (event) {
                 if (event.target.tagName === "IMG" && event.target.id!=constants.popoverID) {
+
                     var popover =  document.getElementById(constants.popoverID).shadowRoot.getElementById(constants.popoverID2);
-                    popover.style.top = event.target.offsetTop.toString() + "px";
-                    popover.style.left = event.target.offsetLeft.toString() + "px";
-                    popover.style.display = "block";//add a class not display
+                    positionPopupOnPage(event,popover);
 
                     if (current_popover === undefined) {
                         var modal = document.getElementById(constants.popoverID).shadowRoot.getElementById(constants.modal_button);
                         modal.addEventListener("click", function () {
-                            console.log('done')
+                            console.log('pornire modal')
+                            popover.style.display="none"
                         })
                     }
+
                     current_popover = popover;
 
                 } else {
@@ -53,6 +99,19 @@ window.onload = function () {
                         current_popover.style.display = "none";
                         current_popover = null;
                     }
+                }
+            });
+            window.addEventListener("scroll",function (e) {
+                if(current_popover!=undefined){
+
+                    current_popover.style.display="none"
+                }
+
+            });
+            window.addEventListener("resize",function (e) {
+                if(current_popover!=undefined){
+
+                    current_popover.style.display="none"
                 }
             });
         })

@@ -1,0 +1,2518 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>    <link rel="stylesheet" href="./../css/extension_popover.css">
+    <link href='https://fonts.googleapis.com/css?family=Quicksand:300,400,700' rel='stylesheet' type='text/css'>
+    <link href='https://fonts.googleapis.com/css?family=Lato:400,300' rel='stylesheet' type='text/css'>
+    <script src="./../js/Constants.js"></script>
+<style>
+
+
+
+    /*
+    ** Class Schedule Table styles
+    */
+    #FHC-Schedule-Wrapper {
+    }
+    .schedule {
+        width: 100%;
+        table-layout: fixed;
+        border-spacing: 0;
+        margin: auto 0;
+        font-size: .8em;
+    }
+    .schedule p {
+        line-height: 1.2em;
+    }
+    .schedule th, .schedule td {
+        border: solid tan 1px;
+        min-width: 250px;
+        text-align: left;
+        vertical-align: top;
+        padding-left: 10px;
+        padding-right: 10px;
+        padding-top: 5px;
+        padding-bottom: 5px;
+    }
+    .schedule td:hover {
+        background-color: #f2f2f2;
+    }
+    .schedule th {
+        text-align: center;
+    }
+    .schedule .header-row, .schedule .header-col {
+        background-color: lightgrey;
+        text-align: center
+    }
+    .schedule .header-col {
+        padding-left: 5px;
+        padding-right: 5px;
+        vertical-align: middle;
+        max-width: 125px !important;
+        min-width: 100px !important;
+    }
+    .comment td {
+        text-align: center;
+    }
+    .comment td p:nth-of-type(2) {
+        margin-top: -1em;
+    }
+    .classTitle {
+        padding: 5px;
+        font-size: 1.2em;
+        text-decoration: underline;
+        text-align: left;
+        color: blue;
+    }
+    .instructor {
+        padding: 5px;
+        margin-top: 5px;
+        font-size: 1em;
+        text-decoration: underline;
+        text-align: right;
+        color: blue;
+        float: right;
+    }
+    .classTitle:hover, .instructor:hover {
+        cursor: pointer;
+    }
+    .classDescrip, .gender, .instructorBio,
+    .instructorImg {
+        display: none;
+    }
+    .popup {
+        position: absolute;
+        display: flex;
+        border: 2px solid #000;
+        border-radius: 10px;
+        width: 220px;
+        height: 250px;
+        background-color: rgba(115, 115, 115, .8);
+        color: #fff;
+        z-index: 10100;
+    }
+    .popup-content {
+        padding: 32px 20px 20px 20px;
+        overflow-y: hidden;
+    }
+    .popup-btn-wrapper {
+    }
+    .dismiss-popup-btn {
+        position: absolute;
+        top:8px;
+        right: 8px;
+        width: 20px;
+        height: 20px;
+        padding: 4px;
+        font-size: .9em;
+        line-height: .9em;
+        text-align: center;
+        border: 1px solid #000;
+        border-radius: 25%;
+        background-color: #ffffcc;
+        opacity: .6;
+    }
+    .dismiss-popup-btn:hover {
+        opacity: 1;
+    }
+    .popup-img {
+        float: left;
+        margin: 0 10px 10px 0;
+        width: 75px;
+        height: 75px;
+        z-index: 100;
+    }
+    .popup p {
+        margin: 0 0 10px 0;
+    }
+    @media only screen
+    and (max-width: 1200px){
+        #FHC-Schedule-Wrapper {
+            -webkit-overflow-scrolling: touch;
+            overflow-x: auto;
+            margin: 0 0;
+        }
+        .schedule {
+            width: auto;
+        }
+        .schedule th, .schedule td {
+            max-width: 200px;
+        }
+    }
+    @media only screen
+    and (max-width:500px) {
+        .popup {
+            width: 190px;
+        }
+    }
+
+    /* FULL POPOVER CSS FOR ALL POPOVERS */
+    .popover {
+        position: absolute;
+        /*top: 0;*/
+        /*left: 0;*/
+        z-index: 1060;
+        display: none;
+        max-width: 276px;
+        padding: 1px;
+        text-align: left;
+        white-space: normal;
+        background-color: #fff;
+        -webkit-background-clip: padding-box;
+        background-clip: padding-box;
+        border: 1px solid #ccc;
+        border-radius: 6px;
+        -webkit-box-shadow: 0 5px 10px rgba(0, 0, 0, .2);
+        box-shadow: 0 5px 10px rgba(0, 0, 0, .2);
+    }
+    .popover.top {
+        margin-top: -10px;
+    }
+    .popover.right {
+        margin-left: 10px;
+    }
+    .popover.bottom {
+        margin-top: 10px;
+    }
+    .popover.left {
+        margin-left: -10px;
+    }
+    .popover-title {
+        padding: 8px 14px;
+        margin: 0;
+        font-size: 14px;
+        font-weight: normal;
+        line-height: 18px;
+        background-color: #f7f7f7;
+        border-bottom: 1px solid #ebebeb;
+        border-radius: 5px 5px 0 0;
+    }
+    .popover-content {
+        padding: 9px 14px;
+    }
+    .popover > .arrow,
+    .popover > .arrow:after {
+        position: absolute;
+        display: block;
+        width: 0;
+        height: 0;
+        border-color: transparent;
+        border-style: solid;
+    }
+    .popover > .arrow {
+        border-width: 11px;
+    }
+    .popover > .arrow:after {
+        content: "";
+        border-width: 10px;
+    }
+    .popover.top > .arrow {
+        bottom: -11px;
+        left: 50%;
+        margin-left: -11px;
+        border-top-color: #999;
+        border-top-color: rgba(0, 0, 0, .25);
+        border-bottom-width: 0;
+    }
+    .popover.top > .arrow:after {
+        bottom: 1px;
+        margin-left: -10px;
+        content: " ";
+        border-top-color: #fff;
+        border-bottom-width: 0;
+    }
+    .popover.right > .arrow {
+        top: 50%;
+        left: -11px;
+        margin-top: -11px;
+        border-right-color: #999;
+        border-right-color: rgba(0, 0, 0, .25);
+        border-left-width: 0;
+    }
+    .popover.right > .arrow:after {
+        bottom: -10px;
+        left: 1px;
+        content: " ";
+        border-right-color: #fff;
+        border-left-width: 0;
+    }
+    .popover.bottom > .arrow {
+        top: -11px;
+        left: 50%;
+        margin-left: -11px;
+        border-top-width: 0;
+        border-bottom-color: #999;
+        border-bottom-color: rgba(0, 0, 0, .25);
+    }
+    .popover.bottom > .arrow:after {
+        top: 1px;
+        margin-left: -10px;
+        content: " ";
+        border-top-width: 0;
+        border-bottom-color: #fff;
+    }
+    .popover.left > .arrow {
+        top: 50%;
+        right: -11px;
+        margin-top: -11px;
+        border-right-width: 0;
+        border-left-color: #999;
+        border-left-color: rgba(0, 0, 0, .25);
+    }
+    .popover.left > .arrow:after {
+        right: 1px;
+        bottom: -10px;
+        content: " ";
+        border-right-width: 0;
+        border-left-color: #fff;
+    }
+
+    .flex-container {
+        display: flex;
+        justify-content: space-between;
+        background-color: DodgerBlue;
+    }
+
+    .flex-container>span {
+        background-color: #f1f1f1;
+        width: 100px;
+        margin: 10px;
+        text-align: center;
+        line-height: 75px;
+        font-size: 30px;
+    }</style>
+</head>
+<body>
+
+<div id="FHC-Schedule-Wrapper" class="wrapper">
+    <table id="FHC-Schedule" class="schedule">
+        <thead>
+        <tr class="header-row">				<!--header row 1-->
+            <th scope="col" class="header-col">classroom</th>
+            <th scope="col">A</th>						<!--col 2-->
+            <th scope="col">C</th>						<!--col 3-->
+            <th scope="col">D</th>						<!--col 4-->
+            <th scope="col">E</th>						<!--col 5-->
+            <th scope="col">F</th>						<!--col 6-->
+            <th scope="col">I</th>						<!--col 7-->
+        </tr>
+        <tr class="header-row">				<!--header row 2-->
+            <th scope="col" class="header-col">capacity</th>
+            <th scope="col">30</th>						<!--col 2-->
+            <th scope="col">50</th>						<!--col 3-->
+            <th scope="col">100</th>					<!--col 4-->
+            <th scope="col">30</th>						<!--col 5-->
+            <th scope="col">50</th>						<!--col 6-->
+            <th scope="col">100</th>					<!--col 7-->
+        </tr>
+        </thead>
+        <tbody>
+        <tr class="comment">		<!-- tr 800 timeslot (Registration) -->
+            <th scope="row" class="header-col">8:00 - 8:30</th>
+            <td id="x800A-I" colspan="6">
+                <p>Registration/Orientation
+                </p>
+                <p>(open until 1:45)
+                </p>
+            </td>
+        </tr>
+        <tr class="comment">		<!-- tr 900 timeslot (Keynote Address) -->
+            <th scope="row" class="header-col">9:00 - 9:20</th>
+            <td id="x900A-I" colspan="6">
+                <p>Keynote Address
+                </p>
+                <p>Room I
+                </p>
+            </td>
+        </tr>
+        <tr id=x930">						<!-- timeslot 930 -->
+            <th scope="row" class="header-col">9:30 - 10:30</th>
+            <td id="x930A">					<!-- 930 room A -->
+                <p class="classTitle">
+                </p>
+                <div class="classDescrip">
+                </div>
+                <p class="instructor">
+                </p>
+                <p class="gender">
+                </p>
+                <div class="instructorBio">
+                </div>
+                <div class="instructorImg">
+                </div>
+            </td>
+            <td id="x930C">					<!-- 930 room C -->
+                <p class="classTitle">
+                </p>
+                <div class="classDescrip">
+                </div>
+                <p class="instructor">
+                </p>
+                <p class="gender">
+                </p>
+                <div class="instructorBio">
+                </div>
+                <div class="instructorImg">
+                </div>
+            </td>
+            <td id="x930D">					<!-- 930 room D -->
+                <p class="classTitle">
+                </p>
+                <div class="classDescrip">
+                </div>
+                <p class="instructor">
+                </p>
+                <p class="gender">
+                </p>
+                <div class="instructorBio">
+                </div>
+                <div class="instructorImg">
+                </div>
+            </td>
+            <td id="x930E">					<!-- 930 room E -->
+                <p class="classTitle">
+                </p>
+                <div class="classDescrip">
+                </div>
+                <p class="instructor">
+                </p>
+                <p class="gender">
+                </p>
+                <div class="instructorBio">
+                </div>
+                <div class="instructorImg">
+                </div>
+            </td>
+            <td id="x930F">					<!-- 930 room F -->
+                <p class="classTitle">
+                </p>
+                <div class="classDescrip">
+                </div>
+                <p class="instructor">
+                </p>
+                <p class="gender">
+                </p>
+                <div class="instructorBio">
+                </div>
+                <div class="instructorImg">
+                </div>
+            </td>
+            <td id="x930I">					<!-- 930 room I -->
+                <p class="classTitle">
+                </p>
+                <div class="classDescrip">
+                </div>
+                <p class="instructor">
+                </p>
+                <p class="gender">
+                </p>
+                <div class="instructorBio">
+                </div>
+                <div class="instructorImg">
+                </div>
+            </td>
+        </tr>								<!-- end tr x930 timeslot-->
+        <tr id="x1045">						<!-- tr x1045 timeslot -->
+            <th scope="row" class="header-col">10:45 - 11:45</th>
+            <td id="x1045A">
+                <p class="classTitle">
+                </p>
+                <div class="classDescrip">
+                </div>
+                <p class="instructor">
+                </p>
+                <p class="gender">
+                </p>
+                <div class="instructorBio">
+                </div>
+                <div class="instructorImg">
+                </div>
+            </td>
+            <td id="x1045C">
+                <p class="classTitle">
+                </p>
+                <div class="classDescrip">
+                </div>
+                <p class="instructor">
+                </p>
+                <p class="gender">
+                </p>
+                <div class="instructorBio">
+                </div>
+                <div class="instructorImg">
+                </div>
+            </td>>
+            <td id="x1045D">
+                <p class="classTitle">
+                </p>
+                <div class="classDescrip">
+                </div>
+                <p class="instructor">
+                </p>
+                <p class="gender">
+                </p>
+                <div class="instructorBio">
+                </div>
+                <div class="instructorImg">
+                </div>
+            </td>
+            <td id="x1045E">
+                <p class="classTitle">
+                </p>
+                <div class="classDescrip">
+                </div>
+                <p class="instructor">
+                </p>
+                <p class="gender">
+                </p>
+                <div class="instructorBio">
+                </div>
+                <div class="instructorImg">
+                </div>
+            </td>
+            <td id="x1045F">
+                <p class="classTitle">
+                </p>
+                <div class="classDescrip">
+                </div>
+                <p class="instructor">
+                </p>
+                <p class="gender">
+                </p>
+                <div class="instructorBio">
+                </div>
+                <div class="instructorImg">
+                </div>
+            </td>
+            <td id="x1045I">
+                <p class="classTitle">
+                </p>
+                <div class="classDescrip">
+                </div>
+                <p class="instructor">
+                </p>
+                <p class="gender">
+                </p>
+                <div class="instructorBio">
+                </div>
+                <div class="instructorImg">
+                </div>
+            </td>
+        </tr>								<!-- end tr x1045 -->
+        <tr id="x1145" class="comment">		<!-- tr 1145 timeslot (lunch) -->
+            <th scope="row" class="header-col">11:45 - 12:45</th>
+            <td id="x1145A-I" colspan="6"><p>
+                Lunch On Your Own
+            </p>
+            </td>
+        </tr>							<!-- end tr 1145 timeslot -->
+        <tr id="x1245">		<!-- 1245 row -->
+            <th scope="row" class="header-col">12:45 - 1:45</th>
+            <td id="x1245A">
+                <p class="classTitle">
+                </p>
+                <div class="classDescrip">
+                </div>
+                <p class="instructor">
+                </p>
+                <p class="gender">
+                </p>
+                <div class="instructorBio">
+                </div>
+                <div class="instructorImg">
+                </div>
+            </td>
+            <td id="x1245C">
+                <p class="classTitle">
+                </p>
+                <div class="classDescrip">
+                </div>
+                <p class="instructor">
+                </p>
+                <p class="gender">
+                </p>
+                <div class="instructorBio">
+                </div>
+                <div class="instructorImg">
+                </div>
+            </td>
+            <td id="x1245D">
+                <p class="classTitle">
+                </p>
+                <div class="classDescrip">
+                </div>
+                <p class="instructor">
+                </p>
+                <p class="gender">
+                </p>
+                <div class="instructorBio">
+                </div>
+                <div class="instructorImg">
+                </div>
+            </td>
+            <td id="x1245E">
+                <p class="classTitle">
+                </p>
+                <div class="classDescrip">
+                </div>
+                <p class="instructor">
+                </p>
+                <p class="gender">
+                </p>
+                <div class="instructorBio">
+                </div>
+                <div class="instructorImg">
+                </div>
+            </td>
+            <td id="x1245F">
+                <p class="classTitle">
+                </p>
+                <div class="classDescrip">
+                </div>
+                <p class="instructor">
+                </p>
+                <p class="gender">
+                </p>
+                <div class="instructorBio">
+                </div>
+                <div class="instructorImg">
+                </div>
+            </td>
+            <td id="x1245I">
+                <p class="classTitle">
+                </p>
+                <div class="classDescrip">
+                </div>
+                <p class="instructor">
+                </p>
+                <p class="gender">
+                </p>
+                <div class="instructorBio">
+                </div>
+                <div class="instructorImg">
+                </div>
+            </td>
+        </tr>							<!-- end tr x1245 timeslot-->
+        <tr id="x200">
+            <th scope="row" class="header-col">2:00 - 3:00</th>
+            <td id="x200A">
+                <p class="classTitle">
+                </p>
+                <div class="classDescrip">
+                </div>
+                <p class="instructor">
+                </p>
+                <p class="gender">
+                </p>
+                <div class="instructorBio">
+                </div>
+                <div class="instructorImg">
+                </div>
+            </td>
+            <td id="x200C">
+                <p class="classTitle">
+                </p>
+                <div class="classDescrip">
+                </div>
+                <p class="instructor">
+                </p>
+                <p class="gender">
+                </p>
+                <div class="instructorBio">
+                </div>
+                <div class="instructorImg">
+                </div>
+            </td>
+            <td id="x200D">
+                <p class="classTitle">
+                </p>
+                <div class="classDescrip">
+                </div>
+                <p class="instructor">
+                </p>
+                <p class="gender">
+                </p>
+                <div class="instructorBio">
+                </div>
+                <div class="instructorImg">
+                </div>
+            </td>
+            <td id="x200E">
+                <p class="classTitle">
+                </p>
+                <div class="classDescrip">
+                </div>
+                <p class="instructor">
+                </p>
+                <p class="gender">
+                </p>
+                <div class="instructorBio">
+                </div>
+                <div class="instructorImg">
+                </div>
+            </td>
+            <td id="x200F">
+                <p class="classTitle">
+                </p>
+                <div class="classDescrip">
+                </div>
+                <p class="instructor">
+                </p>
+                <p class="gender">
+                </p>
+                <div class="instructorBio">
+                </div>
+                <div class="instructorImg">
+                </div>
+            </td>
+            <td id="x200I">
+                <p class="classTitle">
+                </p>
+                <div class="classDescrip">
+                </div>
+                <p class="instructor">
+                </p>
+                <p class="gender">
+                </p>
+                <div class="instructorBio">
+                </div>
+                <div class="instructorImg">
+                </div>
+            </td>
+        </tr>								<!-- end tr x200 timeslot -->
+        <tr id="x315">						<!-- tr x315 timeslot -->
+            <th scope="row" class="header-col">3:15 - 4:15</th>
+            <td id="x315A">
+                <p class="classTitle">
+                </p>
+                <div class="classDescrip">
+                </div>
+                <p class="instructor">
+                </p>
+                <p class="gender">
+                </p>
+                <div class="instructorBio">
+                </div>
+                <div class="instructorImg">
+                </div>
+            </td>
+            <td id="x315C">
+                <p class="classTitle">
+                </p>
+                <div class="classDescrip">
+                </div>
+                <p class="instructor">
+                </p>
+                <p class="gender">
+                </p>
+                <div class="instructorBio">
+                </div>
+                <div class="instructorImg">
+                </div>
+            </td>
+            <td id="x315D">
+                <p class="classTitle">
+                </p>
+                <div class="classDescrip">
+                </div>
+                <p class="instructor">
+                </p>
+                <p class="gender">
+                </p>
+                <div class="instructorBio">
+                </div>
+                <div class="instructorImg">
+                </div>
+            </td>
+            <td id="x315E">
+                <p class="classTitle">
+                </p>
+                <div class="classDescrip">
+                </div>
+                <p class="instructor">
+                </p>
+                <p class="gender">
+                </p>
+                <div class="instructorBio">
+                </div>
+                <div class="instructorImg">
+                </div>
+            </td>
+            <td id="x315F">
+                <p class="classTitle">
+                </p>
+                <div class="classDescrip">
+                </div>
+                <p class="instructor">
+                </p>
+                <p class="gender">
+                </p>
+                <div class="instructorBio">
+                </div>
+                <div class="instructorImg">
+                </div>
+            </td>
+            <td id="x315I">
+                <p class="classTitle">
+                </p>
+                <div class="classDescrip">
+                </div>
+                <p class="instructor">
+                </p>
+                <p class="gender">
+                </p>
+                <div class="instructorBio">
+                </div>
+                <div class="instructorImg">
+                </div>
+            </td>
+        </tr>	 <tr class="header-row">				<!--header row 1-->
+            <th scope="col" class="header-col">classroom</th>
+            <th scope="col">A</th>						<!--col 2-->
+            <th scope="col">C</th>						<!--col 3-->
+            <th scope="col">D</th>						<!--col 4-->
+            <th scope="col">E</th>						<!--col 5-->
+            <th scope="col">F</th>						<!--col 6-->
+            <th scope="col">I</th>						<!--col 7-->
+        </tr>
+        <tr class="header-row">				<!--header row 2-->
+            <th scope="col" class="header-col">capacity</th>
+            <th scope="col">30</th>						<!--col 2-->
+            <th scope="col">50</th>						<!--col 3-->
+            <th scope="col">100</th>					<!--col 4-->
+            <th scope="col">30</th>						<!--col 5-->
+            <th scope="col">50</th>						<!--col 6-->
+            <th scope="col">100</th>					<!--col 7-->
+        </tr>
+        </thead>
+        <tbody>
+        <tr class="comment">		<!-- tr 800 timeslot (Registration) -->
+            <th scope="row" class="header-col">8:00 - 8:30</th>
+            <td id="x800A-I" colspan="6">
+                <p>Registration/Orientation
+                </p>
+                <p>(open until 1:45)
+                </p>
+            </td>
+        </tr>
+        <tr class="comment">		<!-- tr 900 timeslot (Keynote Address) -->
+            <th scope="row" class="header-col">9:00 - 9:20</th>
+            <td id="x900A-I" colspan="6">
+                <p>Keynote Address
+                </p>
+                <p>Room I
+                </p>
+            </td>
+        </tr>
+        <tr id=x930">						<!-- timeslot 930 -->
+            <th scope="row" class="header-col">9:30 - 10:30</th>
+            <td id="x930A">					<!-- 930 room A -->
+                <p class="classTitle">
+                </p>
+                <div class="classDescrip">
+                </div>
+                <p class="instructor">
+                </p>
+                <p class="gender">
+                </p>
+                <div class="instructorBio">
+                </div>
+                <div class="instructorImg">
+                </div>
+            </td>
+            <td id="x930C">					<!-- 930 room C -->
+                <p class="classTitle">
+                </p>
+                <div class="classDescrip">
+                </div>
+                <p class="instructor">
+                </p>
+                <p class="gender">
+                </p>
+                <div class="instructorBio">
+                </div>
+                <div class="instructorImg">
+                </div>
+            </td>
+            <td id="x930D">					<!-- 930 room D -->
+                <p class="classTitle">
+                </p>
+                <div class="classDescrip">
+                </div>
+                <p class="instructor">
+                </p>
+                <p class="gender">
+                </p>
+                <div class="instructorBio">
+                </div>
+                <div class="instructorImg">
+                </div>
+            </td>
+            <td id="x930E">					<!-- 930 room E -->
+                <p class="classTitle">
+                </p>
+                <div class="classDescrip">
+                </div>
+                <p class="instructor">
+                </p>
+                <p class="gender">
+                </p>
+                <div class="instructorBio">
+                </div>
+                <div class="instructorImg">
+                </div>
+            </td>
+            <td id="x930F">					<!-- 930 room F -->
+                <p class="classTitle">
+                </p>
+                <div class="classDescrip">
+                </div>
+                <p class="instructor">
+                </p>
+                <p class="gender">
+                </p>
+                <div class="instructorBio">
+                </div>
+                <div class="instructorImg">
+                </div>
+            </td>
+            <td id="x930I">					<!-- 930 room I -->
+                <p class="classTitle">
+                </p>
+                <div class="classDescrip">
+                </div>
+                <p class="instructor">
+                </p>
+                <p class="gender">
+                </p>
+                <div class="instructorBio">
+                </div>
+                <div class="instructorImg">
+                </div>
+            </td>
+        </tr>								<!-- end tr x930 timeslot-->
+        <tr id="x1045">						<!-- tr x1045 timeslot -->
+            <th scope="row" class="header-col">10:45 - 11:45</th>
+            <td id="x1045A">
+                <p class="classTitle">
+                </p>
+                <div class="classDescrip">
+                </div>
+                <p class="instructor">
+                </p>
+                <p class="gender">
+                </p>
+                <div class="instructorBio">
+                </div>
+                <div class="instructorImg">
+                </div>
+            </td>
+            <td id="x1045C">
+                <p class="classTitle">
+                </p>
+                <div class="classDescrip">
+                </div>
+                <p class="instructor">
+                </p>
+                <p class="gender">
+                </p>
+                <div class="instructorBio">
+                </div>
+                <div class="instructorImg">
+                </div>
+            </td>>
+            <td id="x1045D">
+                <p class="classTitle">
+                </p>
+                <div class="classDescrip">
+                </div>
+                <p class="instructor">
+                </p>
+                <p class="gender">
+                </p>
+                <div class="instructorBio">
+                </div>
+                <div class="instructorImg">
+                </div>
+            </td>
+            <td id="x1045E">
+                <p class="classTitle">
+                </p>
+                <div class="classDescrip">
+                </div>
+                <p class="instructor">
+                </p>
+                <p class="gender">
+                </p>
+                <div class="instructorBio">
+                </div>
+                <div class="instructorImg">
+                </div>
+            </td>
+            <td id="x1045F">
+                <p class="classTitle">
+                </p>
+                <div class="classDescrip">
+                </div>
+                <p class="instructor">
+                </p>
+                <p class="gender">
+                </p>
+                <div class="instructorBio">
+                </div>
+                <div class="instructorImg">
+                </div>
+            </td>
+            <td id="x1045I">
+                <p class="classTitle">
+                </p>
+                <div class="classDescrip">
+                </div>
+                <p class="instructor">
+                </p>
+                <p class="gender">
+                </p>
+                <div class="instructorBio">
+                </div>
+                <div class="instructorImg">
+                </div>
+            </td>
+        </tr>								<!-- end tr x1045 -->
+        <tr id="x1145" class="comment">		<!-- tr 1145 timeslot (lunch) -->
+            <th scope="row" class="header-col">11:45 - 12:45</th>
+            <td id="x1145A-I" colspan="6"><p>
+                Lunch On Your Own
+            </p>
+            </td>
+        </tr>							<!-- end tr 1145 timeslot -->
+        <tr id="x1245">		<!-- 1245 row -->
+            <th scope="row" class="header-col">12:45 - 1:45</th>
+            <td id="x1245A">
+                <p class="classTitle">
+                </p>
+                <div class="classDescrip">
+                </div>
+                <p class="instructor">
+                </p>
+                <p class="gender">
+                </p>
+                <div class="instructorBio">
+                </div>
+                <div class="instructorImg">
+                </div>
+            </td>
+            <td id="x1245C">
+                <p class="classTitle">
+                </p>
+                <div class="classDescrip">
+                </div>
+                <p class="instructor">
+                </p>
+                <p class="gender">
+                </p>
+                <div class="instructorBio">
+                </div>
+                <div class="instructorImg">
+                </div>
+            </td>
+            <td id="x1245D">
+                <p class="classTitle">
+                </p>
+                <div class="classDescrip">
+                </div>
+                <p class="instructor">
+                </p>
+                <p class="gender">
+                </p>
+                <div class="instructorBio">
+                </div>
+                <div class="instructorImg">
+                </div>
+            </td>
+            <td id="x1245E">
+                <p class="classTitle">
+                </p>
+                <div class="classDescrip">
+                </div>
+                <p class="instructor">
+                </p>
+                <p class="gender">
+                </p>
+                <div class="instructorBio">
+                </div>
+                <div class="instructorImg">
+                </div>
+            </td>
+            <td id="x1245F">
+                <p class="classTitle">
+                </p>
+                <div class="classDescrip">
+                </div>
+                <p class="instructor">
+                </p>
+                <p class="gender">
+                </p>
+                <div class="instructorBio">
+                </div>
+                <div class="instructorImg">
+                </div>
+            </td>
+            <td id="x1245I">
+                <p class="classTitle">
+                </p>
+                <div class="classDescrip">
+                </div>
+                <p class="instructor">
+                </p>
+                <p class="gender">
+                </p>
+                <div class="instructorBio">
+                </div>
+                <div class="instructorImg">
+                </div>
+            </td>
+        </tr>							<!-- end tr x1245 timeslot-->
+        <tr id="x200">
+            <th scope="row" class="header-col">2:00 - 3:00</th>
+            <td id="x200A">
+                <p class="classTitle">
+                </p>
+                <div class="classDescrip">
+                </div>
+                <p class="instructor">
+                </p>
+                <p class="gender">
+                </p>
+                <div class="instructorBio">
+                </div>
+                <div class="instructorImg">
+                </div>
+            </td>
+            <td id="x200C">
+                <p class="classTitle">
+                </p>
+                <div class="classDescrip">
+                </div>
+                <p class="instructor">
+                </p>
+                <p class="gender">
+                </p>
+                <div class="instructorBio">
+                </div>
+                <div class="instructorImg">
+                </div>
+            </td>
+            <td id="x200D">
+                <p class="classTitle">
+                </p>
+                <div class="classDescrip">
+                </div>
+                <p class="instructor">
+                </p>
+                <p class="gender">
+                </p>
+                <div class="instructorBio">
+                </div>
+                <div class="instructorImg">
+                </div>
+            </td>
+            <td id="x200E">
+                <p class="classTitle">
+                </p>
+                <div class="classDescrip">
+                </div>
+                <p class="instructor">
+                </p>
+                <p class="gender">
+                </p>
+                <div class="instructorBio">
+                </div>
+                <div class="instructorImg">
+                </div>
+            </td>
+            <td id="x200F">
+                <p class="classTitle">
+                </p>
+                <div class="classDescrip">
+                </div>
+                <p class="instructor">
+                </p>
+                <p class="gender">
+                </p>
+                <div class="instructorBio">
+                </div>
+                <div class="instructorImg">
+                </div>
+            </td>
+            <td id="x200I">
+                <p class="classTitle">
+                </p>
+                <div class="classDescrip">
+                </div>
+                <p class="instructor">
+                </p>
+                <p class="gender">
+                </p>
+                <div class="instructorBio">
+                </div>
+                <div class="instructorImg">
+                </div>
+            </td>
+        </tr>								<!-- end tr x200 timeslot -->
+        <tr id="x315">						<!-- tr x315 timeslot -->
+            <th scope="row" class="header-col">3:15 - 4:15</th>
+            <td id="x315A">
+                <p class="classTitle">
+                </p>
+                <div class="classDescrip">
+                </div>
+                <p class="instructor">
+                </p>
+                <p class="gender">
+                </p>
+                <div class="instructorBio">
+                </div>
+                <div class="instructorImg">
+                </div>
+            </td>
+            <td id="x315C">
+                <p class="classTitle">
+                </p>
+                <div class="classDescrip">
+                </div>
+                <p class="instructor">
+                </p>
+                <p class="gender">
+                </p>
+                <div class="instructorBio">
+                </div>
+                <div class="instructorImg">
+                </div>
+            </td>
+            <td id="x315D">
+                <p class="classTitle">
+                </p>
+                <div class="classDescrip">
+                </div>
+                <p class="instructor">
+                </p>
+                <p class="gender">
+                </p>
+                <div class="instructorBio">
+                </div>
+                <div class="instructorImg">
+                </div>
+            </td>
+            <td id="x315E">
+                <p class="classTitle">
+                </p>
+                <div class="classDescrip">
+                </div>
+                <p class="instructor">
+                </p>
+                <p class="gender">
+                </p>
+                <div class="instructorBio">
+                </div>
+                <div class="instructorImg">
+                </div>
+            </td>
+            <td id="x315F">
+                <p class="classTitle">
+                </p>
+                <div class="classDescrip">
+                </div>
+                <p class="instructor">
+                </p>
+                <p class="gender">
+                </p>
+                <div class="instructorBio">
+                </div>
+                <div class="instructorImg">
+                </div>
+            </td>
+            <td id="x315I">
+                <p class="classTitle">
+                </p>
+                <div class="classDescrip">
+                </div>
+                <p class="instructor">
+                </p>
+                <p class="gender">
+                </p>
+                <div class="instructorBio">
+                </div>
+                <div class="instructorImg">
+                </div>
+            </td>
+        </tr>						 <tr class="header-row">				<!--header row 1-->
+            <th scope="col" class="header-col">classroom</th>
+            <th scope="col">A</th>						<!--col 2-->
+            <th scope="col">C</th>						<!--col 3-->
+            <th scope="col">D</th>						<!--col 4-->
+            <th scope="col">E</th>						<!--col 5-->
+            <th scope="col">F</th>						<!--col 6-->
+            <th scope="col">I</th>						<!--col 7-->
+        </tr>
+        <tr class="header-row">				<!--header row 2-->
+            <th scope="col" class="header-col">capacity</th>
+            <th scope="col">30</th>						<!--col 2-->
+            <th scope="col">50</th>						<!--col 3-->
+            <th scope="col">100</th>					<!--col 4-->
+            <th scope="col">30</th>						<!--col 5-->
+            <th scope="col">50</th>						<!--col 6-->
+            <th scope="col">100</th>					<!--col 7-->
+        </tr>
+        </thead>
+        <tbody>
+        <tr class="comment">		<!-- tr 800 timeslot (Registration) -->
+            <th scope="row" class="header-col">8:00 - 8:30</th>
+            <td id="x800A-I" colspan="6">
+                <p>Registration/Orientation
+                </p>
+                <p>(open until 1:45)
+                </p>
+            </td>
+        </tr>
+        <tr class="comment">		<!-- tr 900 timeslot (Keynote Address) -->
+            <th scope="row" class="header-col">9:00 - 9:20</th>
+            <td id="x900A-I" colspan="6">
+                <p>Keynote Address
+                </p>
+                <p>Room I
+                </p>
+            </td>
+        </tr>
+        <tr id=x930">						<!-- timeslot 930 -->
+            <th scope="row" class="header-col">9:30 - 10:30</th>
+            <td id="x930A">					<!-- 930 room A -->
+                <p class="classTitle">
+                </p>
+                <div class="classDescrip">
+                </div>
+                <p class="instructor">
+                </p>
+                <p class="gender">
+                </p>
+                <div class="instructorBio">
+                </div>
+                <div class="instructorImg">
+                </div>
+            </td>
+            <td id="x930C">					<!-- 930 room C -->
+                <p class="classTitle">
+                </p>
+                <div class="classDescrip">
+                </div>
+                <p class="instructor">
+                </p>
+                <p class="gender">
+                </p>
+                <div class="instructorBio">
+                </div>
+                <div class="instructorImg">
+                </div>
+            </td>
+            <td id="x930D">					<!-- 930 room D -->
+                <p class="classTitle">
+                </p>
+                <div class="classDescrip">
+                </div>
+                <p class="instructor">
+                </p>
+                <p class="gender">
+                </p>
+                <div class="instructorBio">
+                </div>
+                <div class="instructorImg">
+                </div>
+            </td>
+            <td id="x930E">					<!-- 930 room E -->
+                <p class="classTitle">
+                </p>
+                <div class="classDescrip">
+                </div>
+                <p class="instructor">
+                </p>
+                <p class="gender">
+                </p>
+                <div class="instructorBio">
+                </div>
+                <div class="instructorImg">
+                </div>
+            </td>
+            <td id="x930F">					<!-- 930 room F -->
+                <p class="classTitle">
+                </p>
+                <div class="classDescrip">
+                </div>
+                <p class="instructor">
+                </p>
+                <p class="gender">
+                </p>
+                <div class="instructorBio">
+                </div>
+                <div class="instructorImg">
+                </div>
+            </td>
+            <td id="x930I">					<!-- 930 room I -->
+                <p class="classTitle">
+                </p>
+                <div class="classDescrip">
+                </div>
+                <p class="instructor">
+                </p>
+                <p class="gender">
+                </p>
+                <div class="instructorBio">
+                </div>
+                <div class="instructorImg">
+                </div>
+            </td>
+        </tr>								<!-- end tr x930 timeslot-->
+        <tr id="x1045">						<!-- tr x1045 timeslot -->
+            <th scope="row" class="header-col">10:45 - 11:45</th>
+            <td id="x1045A">
+                <p class="classTitle">
+                </p>
+                <div class="classDescrip">
+                </div>
+                <p class="instructor">
+                </p>
+                <p class="gender">
+                </p>
+                <div class="instructorBio">
+                </div>
+                <div class="instructorImg">
+                </div>
+            </td>
+            <td id="x1045C">
+                <p class="classTitle">
+                </p>
+                <div class="classDescrip">
+                </div>
+                <p class="instructor">
+                </p>
+                <p class="gender">
+                </p>
+                <div class="instructorBio">
+                </div>
+                <div class="instructorImg">
+                </div>
+            </td>>
+            <td id="x1045D">
+                <p class="classTitle">
+                </p>
+                <div class="classDescrip">
+                </div>
+                <p class="instructor">
+                </p>
+                <p class="gender">
+                </p>
+                <div class="instructorBio">
+                </div>
+                <div class="instructorImg">
+                </div>
+            </td>
+            <td id="x1045E">
+                <p class="classTitle">
+                </p>
+                <div class="classDescrip">
+                </div>
+                <p class="instructor">
+                </p>
+                <p class="gender">
+                </p>
+                <div class="instructorBio">
+                </div>
+                <div class="instructorImg">
+                </div>
+            </td>
+            <td id="x1045F">
+                <p class="classTitle">
+                </p>
+                <div class="classDescrip">
+                </div>
+                <p class="instructor">
+                </p>
+                <p class="gender">
+                </p>
+                <div class="instructorBio">
+                </div>
+                <div class="instructorImg">
+                </div>
+            </td>
+            <td id="x1045I">
+                <p class="classTitle">
+                </p>
+                <div class="classDescrip">
+                </div>
+                <p class="instructor">
+                </p>
+                <p class="gender">
+                </p>
+                <div class="instructorBio">
+                </div>
+                <div class="instructorImg">
+                </div>
+            </td>
+        </tr>								<!-- end tr x1045 -->
+        <tr id="x1145" class="comment">		<!-- tr 1145 timeslot (lunch) -->
+            <th scope="row" class="header-col">11:45 - 12:45</th>
+            <td id="x1145A-I" colspan="6"><p>
+                Lunch On Your Own
+            </p>
+            </td>
+        </tr>							<!-- end tr 1145 timeslot -->
+        <tr id="x1245">		<!-- 1245 row -->
+            <th scope="row" class="header-col">12:45 - 1:45</th>
+            <td id="x1245A">
+                <p class="classTitle">
+                </p>
+                <div class="classDescrip">
+                </div>
+                <p class="instructor">
+                </p>
+                <p class="gender">
+                </p>
+                <div class="instructorBio">
+                </div>
+                <div class="instructorImg">
+                </div>
+            </td>
+            <td id="x1245C">
+                <p class="classTitle">
+                </p>
+                <div class="classDescrip">
+                </div>
+                <p class="instructor">
+                </p>
+                <p class="gender">
+                </p>
+                <div class="instructorBio">
+                </div>
+                <div class="instructorImg">
+                </div>
+            </td>
+            <td id="x1245D">
+                <p class="classTitle">
+                </p>
+                <div class="classDescrip">
+                </div>
+                <p class="instructor">
+                </p>
+                <p class="gender">
+                </p>
+                <div class="instructorBio">
+                </div>
+                <div class="instructorImg">
+                </div>
+            </td>
+            <td id="x1245E">
+                <p class="classTitle">
+                </p>
+                <div class="classDescrip">
+                </div>
+                <p class="instructor">
+                </p>
+                <p class="gender">
+                </p>
+                <div class="instructorBio">
+                </div>
+                <div class="instructorImg">
+                </div>
+            </td>
+            <td id="x1245F">
+                <p class="classTitle">
+                </p>
+                <div class="classDescrip">
+                </div>
+                <p class="instructor">
+                </p>
+                <p class="gender">
+                </p>
+                <div class="instructorBio">
+                </div>
+                <div class="instructorImg">
+                </div>
+            </td>
+            <td id="x1245I">
+                <p class="classTitle">
+                </p>
+                <div class="classDescrip">
+                </div>
+                <p class="instructor">
+                </p>
+                <p class="gender">
+                </p>
+                <div class="instructorBio">
+                </div>
+                <div class="instructorImg">
+                </div>
+            </td>
+        </tr>							<!-- end tr x1245 timeslot-->
+        <tr id="x200">
+            <th scope="row" class="header-col">2:00 - 3:00</th>
+            <td id="x200A">
+                <p class="classTitle">
+                </p>
+                <div class="classDescrip">
+                </div>
+                <p class="instructor">
+                </p>
+                <p class="gender">
+                </p>
+                <div class="instructorBio">
+                </div>
+                <div class="instructorImg">
+                </div>
+            </td>
+            <td id="x200C">
+                <p class="classTitle">
+                </p>
+                <div class="classDescrip">
+                </div>
+                <p class="instructor">
+                </p>
+                <p class="gender">
+                </p>
+                <div class="instructorBio">
+                </div>
+                <div class="instructorImg">
+                </div>
+            </td>
+            <td id="x200D">
+                <p class="classTitle">
+                </p>
+                <div class="classDescrip">
+                </div>
+                <p class="instructor">
+                </p>
+                <p class="gender">
+                </p>
+                <div class="instructorBio">
+                </div>
+                <div class="instructorImg">
+                </div>
+            </td>
+            <td id="x200E">
+                <p class="classTitle">
+                </p>
+                <div class="classDescrip">
+                </div>
+                <p class="instructor">
+                </p>
+                <p class="gender">
+                </p>
+                <div class="instructorBio">
+                </div>
+                <div class="instructorImg">
+                </div>
+            </td>
+            <td id="x200F">
+                <p class="classTitle">
+                </p>
+                <div class="classDescrip">
+                </div>
+                <p class="instructor">
+                </p>
+                <p class="gender">
+                </p>
+                <div class="instructorBio">
+                </div>
+                <div class="instructorImg">
+                </div>
+            </td>
+            <td id="x200I">
+                <p class="classTitle">
+                </p>
+                <div class="classDescrip">
+                </div>
+                <p class="instructor">
+                </p>
+                <p class="gender">
+                </p>
+                <div class="instructorBio">
+                </div>
+                <div class="instructorImg">
+                </div>
+            </td>
+        </tr>								<!-- end tr x200 timeslot -->
+        <tr id="x315">						<!-- tr x315 timeslot -->
+            <th scope="row" class="header-col">3:15 - 4:15</th>
+            <td id="x315A">
+                <p class="classTitle">
+                </p>
+                <div class="classDescrip">
+                </div>
+                <p class="instructor">
+                </p>
+                <p class="gender">
+                </p>
+                <div class="instructorBio">
+                </div>
+                <div class="instructorImg">
+                </div>
+            </td>
+            <td id="x315C">
+                <p class="classTitle">
+                </p>
+                <div class="classDescrip">
+                </div>
+                <p class="instructor">
+                </p>
+                <p class="gender">
+                </p>
+                <div class="instructorBio">
+                </div>
+                <div class="instructorImg">
+                </div>
+            </td>
+            <td id="x315D">
+                <p class="classTitle">
+                </p>
+                <div class="classDescrip">
+                </div>
+                <p class="instructor">
+                </p>
+                <p class="gender">
+                </p>
+                <div class="instructorBio">
+                </div>
+                <div class="instructorImg">
+                </div>
+            </td>
+            <td id="x315E">
+                <p class="classTitle">
+                </p>
+                <div class="classDescrip">
+                </div>
+                <p class="instructor">
+                </p>
+                <p class="gender">
+                </p>
+                <div class="instructorBio">
+                </div>
+                <div class="instructorImg">
+                </div>
+            </td>
+            <td id="x315F">
+                <p class="classTitle">
+                </p>
+                <div class="classDescrip">
+                </div>
+                <p class="instructor">
+                </p>
+                <p class="gender">
+                </p>
+                <div class="instructorBio">
+                </div>
+                <div class="instructorImg">
+                </div>
+            </td>
+            <td id="x315I">
+                <p class="classTitle">
+                </p>
+                <div class="classDescrip">
+                </div>
+                <p class="instructor">
+                </p>
+                <p class="gender">
+                </p>
+                <div class="instructorBio">
+                </div>
+                <div class="instructorImg">
+                </div>
+            </td>
+        </tr>						 <tr class="header-row">				<!--header row 1-->
+            <th scope="col" class="header-col">classroom</th>
+            <th scope="col">A</th>						<!--col 2-->
+            <th scope="col">C</th>						<!--col 3-->
+            <th scope="col">D</th>						<!--col 4-->
+            <th scope="col">E</th>						<!--col 5-->
+            <th scope="col">F</th>						<!--col 6-->
+            <th scope="col">I</th>						<!--col 7-->
+        </tr>
+        <tr class="header-row">				<!--header row 2-->
+            <th scope="col" class="header-col">capacity</th>
+            <th scope="col">30</th>						<!--col 2-->
+            <th scope="col">50</th>						<!--col 3-->
+            <th scope="col">100</th>					<!--col 4-->
+            <th scope="col">30</th>						<!--col 5-->
+            <th scope="col">50</th>						<!--col 6-->
+            <th scope="col">100</th>					<!--col 7-->
+        </tr>
+        </thead>
+        <tbody>
+        <tr class="comment">		<!-- tr 800 timeslot (Registration) -->
+            <th scope="row" class="header-col">8:00 - 8:30</th>
+            <td id="x800A-I" colspan="6">
+                <p>Registration/Orientation
+                </p>
+                <p>(open until 1:45)
+                </p>
+            </td>
+        </tr>
+        <tr class="comment">		<!-- tr 900 timeslot (Keynote Address) -->
+            <th scope="row" class="header-col">9:00 - 9:20</th>
+            <td id="x900A-I" colspan="6">
+                <p>Keynote Address
+                </p>
+                <p>Room I
+                </p>
+            </td>
+        </tr>
+        <tr id=x930">						<!-- timeslot 930 -->
+            <th scope="row" class="header-col">9:30 - 10:30</th>
+            <td id="x930A">					<!-- 930 room A -->
+                <p class="classTitle">
+                </p>
+                <div class="classDescrip">
+                </div>
+                <p class="instructor">
+                </p>
+                <p class="gender">
+                </p>
+                <div class="instructorBio">
+                </div>
+                <div class="instructorImg">
+                </div>
+            </td>
+            <td id="x930C">					<!-- 930 room C -->
+                <p class="classTitle">
+                </p>
+                <div class="classDescrip">
+                </div>
+                <p class="instructor">
+                </p>
+                <p class="gender">
+                </p>
+                <div class="instructorBio">
+                </div>
+                <div class="instructorImg">
+                </div>
+            </td>
+            <td id="x930D">					<!-- 930 room D -->
+                <p class="classTitle">
+                </p>
+                <div class="classDescrip">
+                </div>
+                <p class="instructor">
+                </p>
+                <p class="gender">
+                </p>
+                <div class="instructorBio">
+                </div>
+                <div class="instructorImg">
+                </div>
+            </td>
+            <td id="x930E">					<!-- 930 room E -->
+                <p class="classTitle">
+                </p>
+                <div class="classDescrip">
+                </div>
+                <p class="instructor">
+                </p>
+                <p class="gender">
+                </p>
+                <div class="instructorBio">
+                </div>
+                <div class="instructorImg">
+                </div>
+            </td>
+            <td id="x930F">					<!-- 930 room F -->
+                <p class="classTitle">
+                </p>
+                <div class="classDescrip">
+                </div>
+                <p class="instructor">
+                </p>
+                <p class="gender">
+                </p>
+                <div class="instructorBio">
+                </div>
+                <div class="instructorImg">
+                </div>
+            </td>
+            <td id="x930I">					<!-- 930 room I -->
+                <p class="classTitle">
+                </p>
+                <div class="classDescrip">
+                </div>
+                <p class="instructor">
+                </p>
+                <p class="gender">
+                </p>
+                <div class="instructorBio">
+                </div>
+                <div class="instructorImg">
+                </div>
+            </td>
+        </tr>								<!-- end tr x930 timeslot-->
+        <tr id="x1045">						<!-- tr x1045 timeslot -->
+            <th scope="row" class="header-col">10:45 - 11:45</th>
+            <td id="x1045A">
+                <p class="classTitle">
+                </p>
+                <div class="classDescrip">
+                </div>
+                <p class="instructor">
+                </p>
+                <p class="gender">
+                </p>
+                <div class="instructorBio">
+                </div>
+                <div class="instructorImg">
+                </div>
+            </td>
+            <td id="x1045C">
+                <p class="classTitle">
+                </p>
+                <div class="classDescrip">
+                </div>
+                <p class="instructor">
+                </p>
+                <p class="gender">
+                </p>
+                <div class="instructorBio">
+                </div>
+                <div class="instructorImg">
+                </div>
+            </td>>
+            <td id="x1045D">
+                <p class="classTitle">
+                </p>
+                <div class="classDescrip">
+                </div>
+                <p class="instructor">
+                </p>
+                <p class="gender">
+                </p>
+                <div class="instructorBio">
+                </div>
+                <div class="instructorImg">
+                </div>
+            </td>
+            <td id="x1045E">
+                <p class="classTitle">
+                </p>
+                <div class="classDescrip">
+                </div>
+                <p class="instructor">
+                </p>
+                <p class="gender">
+                </p>
+                <div class="instructorBio">
+                </div>
+                <div class="instructorImg">
+                </div>
+            </td>
+            <td id="x1045F">
+                <p class="classTitle">
+                </p>
+                <div class="classDescrip">
+                </div>
+                <p class="instructor">
+                </p>
+                <p class="gender">
+                </p>
+                <div class="instructorBio">
+                </div>
+                <div class="instructorImg">
+                </div>
+            </td>
+            <td id="x1045I">
+                <p class="classTitle">
+                </p>
+                <div class="classDescrip">
+                </div>
+                <p class="instructor">
+                </p>
+                <p class="gender">
+                </p>
+                <div class="instructorBio">
+                </div>
+                <div class="instructorImg">
+                </div>
+            </td>
+        </tr>								<!-- end tr x1045 -->
+        <tr id="x1145" class="comment">		<!-- tr 1145 timeslot (lunch) -->
+            <th scope="row" class="header-col">11:45 - 12:45</th>
+            <td id="x1145A-I" colspan="6"><p>
+                Lunch On Your Own
+            </p>
+            </td>
+        </tr>							<!-- end tr 1145 timeslot -->
+        <tr id="x1245">		<!-- 1245 row -->
+            <th scope="row" class="header-col">12:45 - 1:45</th>
+            <td id="x1245A">
+                <p class="classTitle">
+                </p>
+                <div class="classDescrip">
+                </div>
+                <p class="instructor">
+                </p>
+                <p class="gender">
+                </p>
+                <div class="instructorBio">
+                </div>
+                <div class="instructorImg">
+                </div>
+            </td>
+            <td id="x1245C">
+                <p class="classTitle">
+                </p>
+                <div class="classDescrip">
+                </div>
+                <p class="instructor">
+                </p>
+                <p class="gender">
+                </p>
+                <div class="instructorBio">
+                </div>
+                <div class="instructorImg">
+                </div>
+            </td>
+            <td id="x1245D">
+                <p class="classTitle">
+                </p>
+                <div class="classDescrip">
+                </div>
+                <p class="instructor">
+                </p>
+                <p class="gender">
+                </p>
+                <div class="instructorBio">
+                </div>
+                <div class="instructorImg">
+                </div>
+            </td>
+            <td id="x1245E">
+                <p class="classTitle">
+                </p>
+                <div class="classDescrip">
+                </div>
+                <p class="instructor">
+                </p>
+                <p class="gender">
+                </p>
+                <div class="instructorBio">
+                </div>
+                <div class="instructorImg">
+                </div>
+            </td>
+            <td id="x1245F">
+                <p class="classTitle">
+                </p>
+                <div class="classDescrip">
+                </div>
+                <p class="instructor">
+                </p>
+                <p class="gender">
+                </p>
+                <div class="instructorBio">
+                </div>
+                <div class="instructorImg">
+                </div>
+            </td>
+            <td id="x1245I">
+                <p class="classTitle">
+                </p>
+                <div class="classDescrip">
+                </div>
+                <p class="instructor">
+                </p>
+                <p class="gender">
+                </p>
+                <div class="instructorBio">
+                </div>
+                <div class="instructorImg">
+                </div>
+            </td>
+        </tr>							<!-- end tr x1245 timeslot-->
+        <tr id="x200">
+            <th scope="row" class="header-col">2:00 - 3:00</th>
+            <td id="x200A">
+                <p class="classTitle">
+                </p>
+                <div class="classDescrip">
+                </div>
+                <p class="instructor">
+                </p>
+                <p class="gender">
+                </p>
+                <div class="instructorBio">
+                </div>
+                <div class="instructorImg">
+                </div>
+            </td>
+            <td id="x200C">
+                <p class="classTitle">
+                </p>
+                <div class="classDescrip">
+                </div>
+                <p class="instructor">
+                </p>
+                <p class="gender">
+                </p>
+                <div class="instructorBio">
+                </div>
+                <div class="instructorImg">
+                </div>
+            </td>
+            <td id="x200D">
+                <p class="classTitle">
+                </p>
+                <div class="classDescrip">
+                </div>
+                <p class="instructor">
+                </p>
+                <p class="gender">
+                </p>
+                <div class="instructorBio">
+                </div>
+                <div class="instructorImg">
+                </div>
+            </td>
+            <td id="x200E">
+                <p class="classTitle">
+                </p>
+                <div class="classDescrip">
+                </div>
+                <p class="instructor">
+                </p>
+                <p class="gender">
+                </p>
+                <div class="instructorBio">
+                </div>
+                <div class="instructorImg">
+                </div>
+            </td>
+            <td id="x200F">
+                <p class="classTitle">
+                </p>
+                <div class="classDescrip">
+                </div>
+                <p class="instructor">
+                </p>
+                <p class="gender">
+                </p>
+                <div class="instructorBio">
+                </div>
+                <div class="instructorImg">
+                </div>
+            </td>
+            <td id="x200I">
+                <p class="classTitle">
+                </p>
+                <div class="classDescrip">
+                </div>
+                <p class="instructor">
+                </p>
+                <p class="gender">
+                </p>
+                <div class="instructorBio">
+                </div>
+                <div class="instructorImg">
+                </div>
+            </td>
+        </tr>								<!-- end tr x200 timeslot -->
+        <tr id="x315">						<!-- tr x315 timeslot -->
+            <th scope="row" class="header-col">3:15 - 4:15</th>
+            <td id="x315A">
+                <p class="classTitle">
+                </p>
+                <div class="classDescrip">
+                </div>
+                <p class="instructor">
+                </p>
+                <p class="gender">
+                </p>
+                <div class="instructorBio">
+                </div>
+                <div class="instructorImg">
+                </div>
+            </td>
+            <td id="x315C">
+                <p class="classTitle">
+                </p>
+                <div class="classDescrip">
+                </div>
+                <p class="instructor">
+                </p>
+                <p class="gender">
+                </p>
+                <div class="instructorBio">
+                </div>
+                <div class="instructorImg">
+                </div>
+            </td>
+            <td id="x315D">
+                <p class="classTitle">
+                </p>
+                <div class="classDescrip">
+                </div>
+                <p class="instructor">
+                </p>
+                <p class="gender">
+                </p>
+                <div class="instructorBio">
+                </div>
+                <div class="instructorImg">
+                </div>
+            </td>
+            <td id="x315E">
+                <p class="classTitle">
+                </p>
+                <div class="classDescrip">
+                </div>
+                <p class="instructor">
+                </p>
+                <p class="gender">
+                </p>
+                <div class="instructorBio">
+                </div>
+                <div class="instructorImg">
+                </div>
+            </td>
+            <td id="x315F">
+                <p class="classTitle">
+                </p>
+                <div class="classDescrip">
+                </div>
+                <p class="instructor">
+                </p>
+                <p class="gender">
+                </p>
+                <div class="instructorBio">
+                </div>
+                <div class="instructorImg">
+                </div>
+            </td>
+            <td id="x315I">
+                <p class="classTitle">
+                </p>
+                <div class="classDescrip">
+                </div>
+                <p class="instructor">
+                </p>
+                <p class="gender">
+                </p>
+                <div class="instructorBio">
+                </div>
+                <div class="instructorImg">
+                </div>
+            </td>
+        </tr>													<!-- end tr x315 timeslot -->
+        </tbody>
+    </table>
+</div>
+</body>
+<script>
+    /*
+ ** scripts for populating classTitle, , classDescrip, instructor,
+ ** instructorBio, and instructorImg elements from js array classesp[]
+ */;
+
+    ////  main routine  ////
+    ////  ============  ////
+
+    // declare global variables
+    var errMsg = '';
+    var nodeObject;		// the node list returned by document.getElementsByClassName()
+    var popup;			// the <div> that will popup on click on either
+    // class title or instructor name in #FHC-Schedule table
+    var existsPopup = false;	// no popup currently exists
+    var classes = [];		// the array of objects, 1 per ea. time/classroom slot in
+    // #FHC-Schedule table, containing the info for ea. class
+
+    classes = [
+        { timeslot:'930', classroom:'A', classTitle:'Searching on Ancestry.com 2016 (Basic Search Ideas For The Future)', instructor:'Mindy McLane', gender: 'female',
+            classDescripInnerHTML:
+                '<p>Searching on Ancestry has changed drastically in 2016. Learn advanced syntax and searching strategies.</p>\
+                <p>Sed ut perspiciatis unde omnis iste natus error sit voluptatem accusantium doloremque laudantium, totam rem aperiam, eaque ipsa quae ab illo inventore veritatis et quasi architecto beatae vitae dicta sunt</p>\
+                <p>Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Aenean commodo ligula eget dolor. Aenean massa. Cum sociis natoque penatibus et magnis dis parturient montes, nascetur</p>',
+            instructorBioInnerHTML:
+                '<p>Mindy McLane has taught courses at each of our conferences. She is particularly adept at all things Ancestry.</p>\
+                <p>Sed ut perspiciatis unde omnis iste natus error sit voluptatem accusantium doloremque laudantium, totam rem aperiam, eaque ipsa quae ab illo inventore veritatis et quasi architecto beatae vitae dicta sunt explicabo.</p>',
+            instructorImgInnerHTML: '<img class="popup-img" src="https://static1.squarespace.com/static/546d0ba7e4b03f89760fd462/t/54b4806ae4b043943fa5a471/1463443824178/McLane_Mindy.jpg?format=300w">'
+        },
+
+        { timeslot:'930', classroom:'C', classTitle:'Land and Title Records', instructor:'Nancy Feroe', gender: 'female',
+            classDescripInnerHTML:
+                '<p>Nemo enim ipsam voluptatem quia voluptas sit aspernatur aut odit aut fugit, sed quia consequuntur magni dolores eos qui ratione voluptatem sequi nesciunt. Neque porro quisquam est, qui dolorem</p>',
+            instructorBioInnerHTML:
+                '<p>Nemo enim ipsam voluptatem quia voluptas sit aspernatur aut odit aut fugit, sed quia consequuntur magni dolores eos qui ratione voluptatem sequi nesciunt. Neque porro quisquam est, qui dolorem</p>',
+            instructorImgInnerHTML: ''
+        },
+
+        { timeslot:'930', classroom:'D', classTitle:'Open Computer Lab', instructor: 'varying instructors', gender: '',
+            classDescripInnerHTML:
+                '<p>Sed ut perspiciatis unde omnis iste natus error sit voluptatem accusantium doloremque laudantium, totam rem aperiam, eaque ipsa quae ab illo inventore veritatis et quasi architecto beatae vitae dicta sunt explicabo</p>\
+                <p>Nemo enim ipsam voluptatem quia voluptas sit aspernatur aut odit aut fugit, sed quia consequuntur magni dolores eos qui</p>',
+            instructorBioInnerHTML:
+                '<p>Sed ut perspiciatis unde omnis iste natus error sit voluptatem accusantium doloremque laudantium, totam rem aperiam, eaque ipsa quae ab illo inventore veritatis et quasi architecto beatae vitae dicta sunt</p>\
+                <p>Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Aenean commodo ligula eget dolor. Aenean massa. Cum sociis natoque penatibus et magnis dis parturient montes, nascetur.</p>',
+            instructorImgInnerHTML: ''
+        },
+
+        { timeslot:'930', classroom:'E', classTitle:'"Hey Dad! What did you do in the War?', instructor:'Jim Johnson', gender: 'male',
+            classDescripInnerHTML:
+                '<p>Sed ut perspiciatis unde omnis iste natus error sit voluptatem accusantium doloremque laudantium, totam rem aperiam, eaque ipsa quae ab illo inventore veritatis et quasi architecto beatae vitae dicta sunt</p>\
+                <p>Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Aenean commodo ligula eget dolor. Aenean massa. Cum sociis natoque penatibus et magnis dis parturient montes, nascetur.</p>',
+            instructorBioInnerHTML:
+                '<p>Sed ut perspiciatis unde omnis iste natus error sit voluptatem accusantium doloremque laudantium, totam rem aperiam, eaque ipsa quae ab illo inventore veritatis et quasi architecto beatae vitae dicta sunt</p>\
+                <p>Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Aenean commodo ligula eget dolor. Aenean massa. Cum sociis natoque penatibus et magnis dis parturient montes, nascetur.</p>',
+            instructorImgInnerHTML: '<img class="popup-img" src="https://static1.squarespace.com/static/546d0ba7e4b03f89760fd462/t/550b8741e4b06facd79df789/1463444097808/Johnson_Jim.png?format=500w">'
+        },
+
+        { timeslot:'930', classroom:'F', classTitle:'Thinking through your DNA results and figuring out what to do next.', instructor:'Dianne Gianninni', gender: 'female',
+            classDescripInnerHTML:
+                '<p>Sed ut perspiciatis unde omnis iste natus error sit voluptatem accusantium doloremque laudantium, totam rem aperiam, eaque ipsa quae ab illo inventore veritatis et quasi architecto beatae vitae dicta sunt</p>\
+                <p>Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Aenean commodo ligula eget dolor. Aenean massa. Cum sociis natoque penatibus et magnis dis parturient montes, nascetur.</p>',
+            instructorBioInnerHTML:
+                '<p>Sed ut perspiciatis unde omnis iste natus error sit voluptatem accusantium doloremque laudantium, totam rem aperiam, eaque ipsa quae ab illo inventore veritatis et quasi architecto beatae vitae dicta sunt</p>\
+                <p>Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Aenean commodo ligula eget dolor. Aenean massa. Cum sociis natoque penatibus et magnis dis parturient montes, nascetur.</p>',
+            instructorImgInnerHTML: '<img class="popup-img" src="https://static1.squarespace.com/static/546d0ba7e4b03f89760fd462/t/5491d32be4b00e36dbf33c17/1418842987561/Giannini_Diane.jpg?format=300w">'
+        },
+
+        { timeslot:'930', classroom:'I', classTitle:'Come Find Out What’s Available at the Family History Center in Springdale', instructor:'Charlie Fowler', gender: 'male',
+            classDescripInnerHTML:
+                '<p>Sed ut perspiciatis unde omnis iste natus error sit voluptatem accusantium doloremque laudantium, totam rem aperiam, eaque ipsa quae ab illo inventore veritatis et quasi architecto beatae vitae dicta sunt</p>\
+                <p>Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Aenean commodo ligula eget dolor. Aenean massa. Cum sociis natoque penatibus et magnis dis parturient montes, nascetur.</p>',
+            instructorBioInnerHTML:
+                '<p>Sed ut perspiciatis unde omnis iste natus error sit voluptatem accusantium doloremque laudantium, totam rem aperiam, eaque ipsa quae ab illo inventore veritatis et quasi architecto beatae vitae dicta sunt</p>\
+                <p>Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Aenean commodo ligula eget dolor. Aenean massa. Cum sociis natoque penatibus et magnis dis parturient montes, nascetur.</p>',
+            instructorImgInnerHTML: '<img class="popup-img" src="https://static1.squarespace.com/static/546d0ba7e4b03f89760fd462/t/56df3afe37013b7f3882d97c/1457470305450/?format=300w">'
+        }
+    ];	// end classes[]
+
+    // initialize / populate #FHC-Schedule table from the data in classes[]
+    populateScheduleTable();
+
+    //  add listeners then wait for something to happen
+    nodeObject = document.getElementsByClassName("classTitle");
+    addListeners(nodeObject);
+    nodeObject = document.getElementsByClassName("instructor");
+    addListeners(nodeObject);
+
+    /// function definitions ////
+    //// ==================== ////
+    // populate #FHC-Schedule table
+    function populateScheduleTable(){
+        var tdId, selectorStrPrefix, selectorStr, el;
+
+        // for ea. classes[i], get node list of elements
+        //  matching selector; set elements' innerHTML to
+        //  matching data from classes[i]
+
+        for(i = 0, max = classes.length; i < max; i++){
+            tdId = classes[i].timeslot + classes[i].classroom;
+            selectorStrPrefix = '#x' + tdId + ' > ';
+
+            selectorStr = selectorStrPrefix  + '.classTitle';
+            el = document.querySelector( selectorStr );
+            if(el === null){ logErrMsg( i, selectorStr );}
+            else {
+                el.innerHTML = classes[i].classTitle;}
+            // end if
+
+            selectorStr = selectorStrPrefix + '.instructor';
+            el = document.querySelector( selectorStr );
+            if(el === null ){ logErrMsg( i, selectorStr );}
+            else {
+                el.innerHTML = classes[i].instructor;}
+            // end if
+
+            selectorStr = selectorStrPrefix + '.gender';
+            el = document.querySelector( selectorStr );
+            if(el === null ){ logErrMsg( i, selectorStr );}
+            else {
+                el.innerHTML = classes[i].gender;}
+            // end if
+
+            selectorStr = selectorStrPrefix + '.classDescrip';
+            el = document.querySelector( selectorStr );
+            if(el === null ){ logErrMsg( i, selectorStr );}
+            else {
+                el.innerHTML = classes[i].classDescripInnerHTML;}
+            // end if
+
+            selectorStr = selectorStrPrefix + '.instructorBio';
+            el = document.querySelector( selectorStr )
+            if( el === null){logErrMsg( i, selectorStr )}
+            else {
+                el.innerHTML = classes[i].instructorBioInnerHTML;}
+            // end if
+
+            selectorStr = selectorStrPrefix + '.instructorImg';
+            el = document.querySelector( selectorStr )
+            if( el === null){logErrMsg( i, selectorStr )}
+            else {
+                el.innerHTML = classes[i].instructorImgInnerHTML;}
+            // end if
+        }	// end for
+        if( errMsg !== "" ) { console.log( errMsg ); }
+    }	// end fn populateScheduleTable
+
+    // log error messages; called in populateScheduleTable()
+    function logErrMsg( i, selectorStr ){
+        errMsg += 'querySelector (' + i + ' : ' + selectorStr +  ') === null; \r\r' ;
+    }	// end fn logErrMsg
+
+    //// functions for main routine ////
+    //// ========================== ////
+    //  addListeners() -- called in main routine to add listeners to
+    // client-title and instructor elements in table
+    function addListeners(nodeObject) {
+        var i;
+        for (i = 0; i < nodeObject.length; i++) {
+            nodeObject[i].addEventListener("click", eventOnElement);
+        }	// end for
+    }	// end fn addListeners
+
+    // called when there is a click event
+    function eventOnElement( event ) {
+        var parentNode, targetNode;
+        if ( !existsPopup ){	// if a popup already exists, do nothing on this click
+            createPopup();
+            populatePopup( event );
+            parentNode = document.getElementsByTagName("body")[0];
+            targetNode = parentNode.children[0];
+            insertPopup( parentNode, targetNode );
+            positionPopupOnPage( event );
+
+            setPopupStyles();
+        }	// end if
+    }	// end fn eventOnElement
+
+    // called when popup dismiss button clicked
+    function removePopup(){
+        popup.remove();
+        existsPopup = false;
+    }	// end fn removePopup
+
+    // called to put data from markup into popup
+    function populatePopup( event ) {
+        var popupHTML, imgHTML, klassName, instructorBioHTML, classDescripHTML;
+        var btnHTML = '<div class="popup-btn-wrapper"><button class="dismiss-popup-btn" onclick="removePopup()">X</button></div>';
+
+        klassName = event.target.className;
+        if( klassName.indexOf('instructor') !== -1 )
+        // this is a click on instructor name event
+        { imgHTML = setInstructorImg( event );
+            instructorBioHTML = event.target.nextElementSibling.nextElementSibling.innerHTML;
+            // set popup's innerHTML
+            popup.innerHTML = '<div class="popup">' + btnHTML + '<div class="popup-content">' + imgHTML + instructorBioHTML +'</div></div>';
+        }
+        else // this is a click on classTitle event
+        { classDescripHTML = event.target.nextElementSibling.innerHTML;
+            popup.innerHTML = '<div class="popup">' + btnHTML + '<div class="popup-content">' + classDescripHTML + '</div></div>';
+        }
+    }	// end fn populatePopup
+
+    function setInstructorImg( event ) {
+        // this is a clickOnInstructor event
+        var imgHTML, gender;
+        // get the <img> HTML and gender from the markup
+        imgHTML = event.target.nextElementSibling.nextElementSibling.nextElementSibling;
+        gender = event.target.nextElementSibling.innerHTML;
+        // if there is no <img> HTML in the markup, set one by default
+        if( (imgHTML.innerHTML === '') || (imgHTML.innerHTML === null) )
+        {	if( gender === "male" )
+        { imgHTML = '<img class="popup-img" src="https://static1.squarespace.com/static/546d0ba7e4b03f89760fd462/t/5738ed8345bf2122c02ecfa1/1463348615348/vintage_man_1.jpg" >';
+        }
+        else { if( gender === "female" )
+        { imgHTML = '<img class="popup-img" src="https://static1.squarespace.com/static/546d0ba7e4b03f89760fd462/t/57280dc8e707ebe0b422235e/1463347003660/Grandma.unframed.png" >';
+        }
+        else { imgHTML = '<img class="popup-img" src="https://static1.squarespace.com/static/546d0ba7e4b03f89760fd462/t/573a079a4c2f85368aed480a/1463420829016/American_Gothic_-_Grant_Wood.150x150.jpg" >';
+        }
+        }
+        }
+        else { imgHTML = imgHTML.innerHTML; }	// there is <img> HTML in markup; use it
+        return imgHTML;
+    }	// end fn setInstructorImg
+
+    // to create popup
+    function createPopup() {
+        popup = document.createElement( 'div' );
+    }	// end fn createPopup
+
+    // to insert popup into DOM from
+    // memory and set its class
+    function insertPopup( parentNode, targetNode ) {
+        parentNode.insertBefore(popup, targetNode);
+        popup.classList.add( 'popup');
+        popup.style.visibility = 'hidden';
+        existsPopup = true;
+    }	// end fn insertPopup
+
+    // positon popup on page relative to cursor
+    // position at time of click event
+    // positon popup on page relative to cursor
+    // position at time of click event
+    function positionPopupOnPage( evt ) {
+
+        var vpWH = [];
+        var vpW, vpH;
+        var intCoordX = evt.clientX;
+        var intCoordY = evt.clientY;
+        var intXOffset = intCoordX;
+        var intYOffset = intCoordY;
+
+        vpWH = getViewPortWidthHeight();
+        vpW = vpWH[0];
+        vpH = vpWH[1];
+        popup.style.position = 'fixed';
+        // if not display: block, .offsetWidth & .offsetHeight === 0
+        popup.style.display = 'block';
+        popup.style.zIndex = '10100';
+
+        if ( intCoordX > vpW/2 ) { intXOffset -= popup.offsetWidth; }
+        if ( intCoordY > vpH/2 ) { intYOffset -= popup.offsetHeight; }
+        if ( vpW <= 500 ) { intXOffset = ( vpW - popup.offsetWidth ) / 2;}
+        if ( vpH <= 500 ) { intYOffset = (vpH - popup.offsetHeight ) / 2;}
+
+        popup.style.top = intYOffset + 'px';
+        popup.style.left = intXOffset + 'px';
+        popup.style.visibility = 'visible';
+
+    }	// end fn positionPopupOnPage
+
+    function getViewPortWidthHeight() {
+
+        var viewPortWidth;
+        var viewPortHeight;
+
+        // the more standards compliant browsers (mozilla/netscape/opera/IE7)
+        // use window.innerWidth and window.innerHeight
+        if (typeof window.innerWidth != 'undefined')
+        {
+            viewPortWidth = window.innerWidth;
+            viewPortHeight = window.innerHeight;
+        }
+
+        // IE6 in standards compliant mode (i.e. with a valid doctype as the
+        // first line in the document)
+        else if (typeof document.documentElement != 'undefined'
+            && typeof document.documentElement.clientWidth !=
+            'undefined' && document.documentElement.clientWidth != 0)
+        {
+            viewPortWidth = document.documentElement.clientWidth;
+            viewPortHeight = document.documentElement.clientHeight;
+        }
+
+        // older versions of IE
+        else {
+            viewPortWidth = document.getElementsByTagName('body')[0].clientWidth;
+            viewPortHeight = document.getElementsByTagName('body')[0].clientHeight;
+        }
+        return [viewPortWidth, viewPortHeight];
+    }	// end fn getViewPortWidthHeight
+
+    //  using JavaScript, dynamically set CSS styles as needed
+    function setPopupStyles(){
+    };  //end fn setPopupStyles
+
+
+</script>
+</html>
