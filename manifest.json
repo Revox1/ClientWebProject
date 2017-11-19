@@ -17,7 +17,7 @@
       "matches": [
         "<all_urls>"
       ],
-      "css":["css/extension_popover.css"],
+      "css":[],
       "js": ["js/Constants.js","js/content.js"]
     }
   ],
@@ -25,6 +25,6 @@
   "permissions": [
     "storage"
   ],
-  "web_accessible_resources": ["html/extension_popover.html"],
+  "web_accessible_resources": ["html/extension_popover.html","css/extension_popover.css"],
   "manifest_version": 2
 }
