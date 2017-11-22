@@ -1,4 +1,4 @@
- * {
+* {
     -webkit-box-sizing: border-box;
     -moz-box-sizing: border-box;
     box-sizing: border-box;
@@ -7,7 +7,7 @@
     margin: 0;
 }
 
- header {
+header {
     display: block;
     overflow: hidden;
     position: relative;
@@ -20,7 +20,7 @@
     border-top-right-radius: 8px;
 }
 
- .container {
+.container {
     display: none;
     position: absolute;
     top: 0;
@@ -41,12 +41,12 @@
     border-bottom: 8px solid #5cc0ff;
 }
 
- .bio:hover > .desc {
+.bio:hover > .desc {
     cursor: pointer;
     opacity: 1;
 }
 
- .avatarcontainer {
+.avatarcontainer {
     position: absolute;
     bottom: 0;
     right: 0;
@@ -57,11 +57,11 @@
     display: block;
 }
 
- .avatarcontainer:hover > .hover {
+.avatarcontainer:hover > .hover {
     opacity: 1;
 }
 
- .avatar {
+.avatar {
     width: 100%;
     border: 8px solid #5cc0ff;
     -webkit-border-radius: 50%;
@@ -72,17 +72,17 @@
     position: relative;
 }
 
- .avatar img {
+.avatar img {
     width: 65px;
     height: 65px;
 }
 
- .avatar:hover + .hover {
+.avatar:hover + .hover {
     opacity: 1;
     cursor: pointer;
 }
 
- .hover {
+.hover {
     position: absolute;
     cursor: pointer;
     width: 100%;
@@ -115,12 +115,12 @@
     transition-timing-function: ease;
 }
 
- .data {
+.data {
     margin-top: .6em;
     color: #81878b;
 }
 
- .data li {
+.data li {
     width: 32%;
     text-align: center;
     display: inline-block;
@@ -128,11 +128,11 @@
     border-right: solid 1px #bdc3c7;
 }
 
- .data li:last-child {
+.data li:last-child {
     border: none;
 }
 
- .data li span {
+.data li span {
     display: block;
     text-transform: uppercase;
     font-size: .5em;
@@ -140,7 +140,7 @@
     font-weight: 700;
 }
 
- .desc {
+.desc {
     position: absolute;
     top: 0;
     background-color: rgba(0, 0, 0, 0.6);
@@ -164,24 +164,23 @@
     transition-timing-function: ease-in;
 }
 
- .desc h3 {
+.desc h3 {
 
     font-size: 1.2em;
     margin-bottom: .5em;
 }
 
- .desc p {
+.desc p {
     font-size: .9em;
 
     line-height: 1.5em;
 }
 
- .follow {
+.follow {
     margin: 1.5em auto 0 auto;
     background-color: #2589cc;
     width: 150px;
     color: white;
-
     text-align: center;
     padding: .5em;
     -webkit-border-radius: 5px;
@@ -190,7 +189,165 @@
     border-radius: 5px;
 }
 
- .follow:hover {
+.follow:hover {
     background-color: #167abd;
     cursor: pointer;
+}
+
+.modal-container {
+    display: block;
+
+}
+
+.modal-container .modal-btn {
+    display: block;
+    margin: 0 auto;
+    color: #fff;
+    width: 160px;
+    height: 50px;
+    line-height: 50px;
+    background: #446CB3;
+    font-size: 22px;
+    border: 0;
+    border-radius: 3px;
+    cursor: pointer;
+    text-align: center;
+    box-shadow: 0 5px 5px -5px #333;
+    transition: background 0.3s ease-in;
+}
+
+.modal-container .modal-btn:hover {
+    background: #365690;
+}
+
+.modal-container .modal-content,
+.modal-container .modal-backdrop {
+    height: 0;
+    width: 0;
+    opacity: 0;
+    visibility: hidden;
+    overflow: hidden;
+    cursor: pointer;
+    transition: opacity 0.2s ease-in;
+}
+
+.modal-container .modal-close {
+    color: #aaa;
+    position: absolute;
+    right: 5px;
+    top: 5px;
+    padding-top: 3px;
+    background: #fff;
+    font-size: 16px;
+    width: 25px;
+    height: 25px;
+    font-weight: bold;
+    text-align: center;
+    cursor: pointer;
+}
+
+.modal-container .modal-close:hover {
+    color: #333;
+}
+
+.modal-container .modal-content-btn {
+    position: absolute;
+    text-align: center;
+    cursor: pointer;
+    bottom: 20px;
+    right: 30px;
+    background: #446CB3;
+    color: #fff;
+    width: 50px;
+    border-radius: 2px;
+    font-size: 14px;
+    height: 32px;
+    padding-top: 9px;
+    font-weight: normal;
+}
+
+.modal-container .modal-content-btn:hover {
+    color: #fff;
+    background: #365690;
+}
+
+.modal-container #modal-toggle {
+    display: none;
+}
+
+.modal-container #modal-toggle.active ~ .modal-backdrop, .modal-container #modal-toggle:checked ~ .modal-backdrop {
+    background-color: rgba(0, 0, 0, 0.6);
+    width: 100vw;
+    height: 100vh;
+    position: fixed;
+    left: 0;
+    top: 0;
+    z-index: 9990;
+    visibility: visible;
+    opacity: 1;
+    transition: opacity 0.2s ease-in;
+}
+
+.modal-container #modal-toggle.active ~ .modal-content, .modal-container #modal-toggle:checked ~ .modal-content {
+    opacity: 1;
+    background-color: #fff;
+    max-width: 400px;
+    width: 400px;
+    height: 480px;
+    padding: 10px 30px;
+    position: fixed;
+    left: calc(50% - 200px);
+    top: 12%;
+    border-radius: 4px;
+    z-index: 9999;
+    pointer-events: auto;
+    cursor: auto;
+    visibility: visible;
+    box-shadow: 0 3px 7px rgba(0, 0, 0, 0.6);
+}
+
+.modal-content .tab {
+    overflow: hidden;
+    border: 1px solid #ccc;
+    background-color: #f1f1f1;
+}
+
+/* Style the buttons inside the tab */
+.modal-content .tab button {
+    background-color: inherit;
+    float: left;
+    border: none;
+    outline: none;
+    cursor: pointer;
+    padding: 14px 16px;
+    transition: 0.3s;
+    font-size: 17px;
+}
+
+/* Change background color of buttons on hover */
+.modal-content .tab button:hover {
+    background-color: #ddd;
+}
+
+.modal-content .tab button.active {
+    background-color: #ccc;
+}
+
+/* Style the tab content */
+.modal-content .tabcontent {
+    display: none;
+    padding: 6px 12px;
+    -webkit-animation: fadeEffect 1s;
+    animation: fadeEffect 1s;
+}
+
+/* Fade in tabs */
+@-webkit-keyframes fadeEffect {
+    from {opacity: 0;}
+    to {opacity: 1;}
+}
+
+@keyframes fadeEffect {
+    from {opacity: 0;}
+    to {opacity: 1;}
 }

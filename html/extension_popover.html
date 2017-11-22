@@ -39,13 +39,44 @@
         </div>
 
         <div class="follow" id="open_modal">
-            <div class="icon-twitter"></div>
-            Follow
+            <label class="modal-btn" for="modal-toggle">Click me</label>
         </div>
     </div>
 
+
 </div>
 
+<div class="modal-container">
+    <input id="modal-toggle" type="checkbox">
+    <label class="modal-backdrop" for="modal-toggle"></label>
+    <div class="modal-content">
+        <label class="modal-close" for="modal-toggle">&#x2715;</label>
+        <h2>Modal title</h2><hr />
+        <p>Hello from inside the modal!</p>
+        <div class="tab">
+            <button class="tablinks" >London</button>
+            <button class="tablinks" >Paris</button>
+            <button class="tablinks" >Tokyo</button>
+        </div>
+
+        <div id="London" class="tabcontent">
+            <h3>London</h3>
+            <p>London is the capital city of England.</p>
+        </div>
+
+        <div id="Paris" class="tabcontent">
+            <h3>Paris</h3>
+            <p>Paris is the capital of France.</p>
+        </div>
+
+        <div id="Tokyo" class="tabcontent">
+            <h3>Tokyo</h3>
+            <p>Tokyo is the capital of Japan.</p>
+        </div>
+
+        <label class="modal-content-btn" for="modal-toggle">OK</label>
+    </div>
+</div>
 <template id="nameTagTemplate">
 </template>
 
