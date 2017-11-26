@@ -3,12 +3,11 @@ function findAncestor(el, cls) {
     return el;
 }
 
-function load_url_for_images() {
+function load_url_for_images(ids,urls) {
     var img;
-    for(var i=0;i<constants.popover_img_ids.length;i++){
-        console.log(constants.popover_img_ids[i])
-        img = document.getElementById(constants.popoverID).shadowRoot.getElementById(constants.popover_img_ids[i]);
-        img.src = chrome.extension.getURL(constants.popover_img_urls[i]);
+    for(var i=0;i<ids.length;i++){
+        img = document.getElementById(constants.popoverID).shadowRoot.getElementById(ids[i]);
+        img.src = chrome.extension.getURL(urls[i]);
     }
 }
 function httpGetAsynca(theUrl, callback) {
@@ -103,7 +102,8 @@ window.onload = function () {
             inject2 = document.createElement("div");
             inject2.innerHTML = data;
             shadow.appendChild(inject2);
-            load_url_for_images();
+            load_url_for_images(constants.popover_img_ids,constants.popover_img_urls);
+            // document.getElementById(constants.popoverID).shadowRoot.getElementById('canvas1').addEventListener('click', drawLine, false);
             window.addEventListener("mouseover", function (event) {
                 if (event.target.tagName === "IMG" && event.target.id != constants.popoverID) {
 
@@ -133,7 +133,6 @@ window.onload = function () {
                     openCity(event, t.innerHTML);
                 });
             });
-            init_canvas();
             window.addEventListener("scroll", function (e) {
                 if (current_popover != undefined) {
                     current_popover.style.display = "none"
