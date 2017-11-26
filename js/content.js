@@ -3,6 +3,14 @@ function findAncestor(el, cls) {
     return el;
 }
 
+function load_url_for_images() {
+    var img;
+    for(var i=0;i<constants.popover_img_ids.length;i++){
+        console.log(constants.popover_img_ids[i])
+        img = document.getElementById(constants.popoverID).shadowRoot.getElementById(constants.popover_img_ids[i]);
+        img.src = chrome.extension.getURL(constants.popover_img_urls[i]);
+    }
+}
 function httpGetAsynca(theUrl, callback) {
     var xmlHttp = new XMLHttpRequest();
     xmlHttp.onreadystatechange = function () {
@@ -41,18 +49,19 @@ function positionPopupOnPage(event, popover) {
 
 }
 
+//todo completely refactor this
 function openCity(evt, cityName) {
-    console.log(evt, cityName);
+
     var i, tabcontent, tablinks;
     tabcontent = document.getElementById(constants.popoverID).shadowRoot.querySelectorAll(".tabcontent");
     for (i = 0; i < tabcontent.length; i++) {
-        tabcontent[i].style.display = "none";
+        tabcontent[i].classList.remove("shown");
     }
     tablinks = document.getElementById(constants.popoverID).shadowRoot.querySelectorAll(".tablinks");
     for (i = 0; i < tablinks.length; i++) {
         tablinks[i].className = tablinks[i].className.replace(" active", "");
     }
-    document.getElementById(constants.popoverID).shadowRoot.getElementById(cityName).style.display = "block";
+    document.getElementById(constants.popoverID).shadowRoot.getElementById(cityName).classList.add("shown");
     evt.currentTarget.className += " active";
 }
 
@@ -94,7 +103,7 @@ window.onload = function () {
             inject2 = document.createElement("div");
             inject2.innerHTML = data;
             shadow.appendChild(inject2);
-
+            load_url_for_images();
             window.addEventListener("mouseover", function (event) {
                 if (event.target.tagName === "IMG" && event.target.id != constants.popoverID) {
 
@@ -103,7 +112,7 @@ window.onload = function () {
 
                     if (current_popover === undefined) {
                         var modal = document.getElementById(constants.popoverID).shadowRoot.getElementById(constants.modal_button);
-                        console.log(modal)
+
                         modal.addEventListener("click", function () {
                             popover.style.display = "none"
                         })
@@ -120,11 +129,11 @@ window.onload = function () {
             });
             var buttons = document.getElementById(constants.popoverID).shadowRoot.querySelectorAll('.tablinks');
             buttons.forEach(function (t) {
-
                 t.addEventListener("click", function (event) {
                     openCity(event, t.innerHTML);
                 });
             });
+            init_canvas();
             window.addEventListener("scroll", function (e) {
                 if (current_popover != undefined) {
                     current_popover.style.display = "none"

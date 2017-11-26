@@ -1,46 +1,67 @@
-
 <div class="container" id="popoverID">
     <header>
         <div class="bio">
-            <img src="https://www.croop.cl/UI/twitter/images/up.jpg" alt="background" class="bg">
+            <img src="../images/rsz_keep-it-simple-blog.jpg" id="popover_img1" alt="background" class="bg" height="151"
+                 width="290">
             <div class="desc">
-                <h3>@carlf</h3>
-                <p>Carl Fredricksen is the protagonist in Up. He also appeared in Dug's Special Mission as a minor
-                    character.</p>
+                <h3>Welcome to IWID!</h3>
+                <p>IWID will help you have another point of view of what you can do with an image! Enjoy :)</p>
             </div>
         </div>
 
         <div class="avatarcontainer">
-            <img src="https://www.croop.cl/UI/twitter/images/carl.jpg" alt="avatar" class="avatar">
+            <img src="../images/avatar2.jpg" alt="avatar" class="avatar" id="popover_img2">
             <div class="hover">
-                <div class="icon-twitter"></div>
+                <img src="../images/avatar1.jpg" alt="avatar" class="avatar" id="popover_img3">
             </div>
         </div>
 
-
+        <label class="modal-btn follow" for="modal-toggle" id="open_modal">Home</label>
     </header>
 
     <div class="content">
+        <div class="info"><span>Info</span>
+            <div class="tags">
+                <ul>
+                    <li>
+                        @Tags
+                    </li>
+                    <li>
+                        @Comments
+                    </li>
+
+                </ul>
+            </div>
+            <div class="infos">
+
+            <ul>
+                <li>
+                    Dimensions: 450px X 450px
+
+                </li>
+                <li>
+                    Alt description: default
+
+                </li>
+
+            </ul></div>
+        </div>
+
         <div class="data">
             <ul>
                 <li>
-                    2,934
-                    <span>Tweets</span>
+                    4
+                    <span>Tags</span>
                 </li>
                 <li>
-                    1,119
-                    <span>Followers</span>
+                    5
+                    <span>Comments</span>
                 </li>
-                <li>
-                    530
-                    <span>Following</span>
-                </li>
+
             </ul>
         </div>
 
-        <div class="follow" id="open_modal">
-            <label class="modal-btn" for="modal-toggle">Click me</label>
-        </div>
+
     </div>
 
 
@@ -51,15 +72,16 @@
     <label class="modal-backdrop" for="modal-toggle"></label>
     <div class="modal-content">
         <label class="modal-close" for="modal-toggle">&#x2715;</label>
-        <h2>Modal title</h2><hr />
-        <p>Hello from inside the modal!</p>
+        <h2>Modal title</h2>
+        <hr/>
+
         <div class="tab">
-            <button class="tablinks" >London</button>
-            <button class="tablinks" >Paris</button>
-            <button class="tablinks" >Tokyo</button>
+            <button class="tablinks active">London</button>
+            <button class="tablinks">Paris</button>
+            <button class="tablinks">Canvas</button>
         </div>
 
-        <div id="London" class="tabcontent">
+        <div id="London" class="tabcontent shown">
             <h3>London</h3>
             <p>London is the capital city of England.</p>
         </div>
@@ -69,9 +91,16 @@
             <p>Paris is the capital of France.</p>
         </div>
 
-        <div id="Tokyo" class="tabcontent">
-            <h3>Tokyo</h3>
-            <p>Tokyo is the capital of Japan.</p>
+        <div id="Canvas" class="tabcontent">
+            <h1>Canvas pencil, undo, redo</h1>
+            <p>Click the pencil button and draw over the canvas. Use undo and redo buttons to navigate through
+                states.</p>
+            <div id="controllers">
+                <span class="controller" id="undo">undo</span>
+                <span class="controller" id="redo">redo</span>
+                <span class="controller" id="pencil">pencil</span>
+            </div>
+            <canvas width="600" height="400" id="paint"></canvas>
         </div>
 
         <label class="modal-content-btn" for="modal-toggle">OK</label>

@@ -18,13 +18,13 @@
         "<all_urls>"
       ],
       "css":[],
-      "js": ["js/Constants.js","js/content.js"]
+      "js": ["js/Constants.js","js/canvas.js","js/content.js"]
     }
   ],
   "offline_enabled": true,
   "permissions": [
     "storage"
   ],
-  "web_accessible_resources": ["html/extension_popover.html","css/extension_popover.css"],
+  "web_accessible_resources": ["html/extension_popover.html","css/extension_popover.css","images/rsz_keep-it-simple-blog.jpg","images/avatar2.jpg","images/avatar1.jpg"],
   "manifest_version": 2
 }
