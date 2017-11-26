@@ -53,7 +53,7 @@ body{
     content: "OFF";
     padding-right: 10px;
     background-color: red; 
-    color: #999999;
+    color: #FFFFFF;
     text-align: right;
 }
 .onoffswitch-switch {
@@ -118,7 +118,7 @@ body{
     content: "Shortcut";
     padding-right: 10px;
     background-color: lightblue; 
-    color: #999999;
+    color: #FFFFFF;
     text-align: right;
 }
 .hovershortcutswitch-switch {
