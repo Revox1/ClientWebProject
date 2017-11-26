@@ -72,23 +72,33 @@
     <label class="modal-backdrop" for="modal-toggle"></label>
     <div class="modal-content">
         <label class="modal-close" for="modal-toggle">&#x2715;</label>
-        <h2>Modal title</h2>
+        <h2>IWAI Modal</h2>
         <hr/>
 
         <div class="tab">
-            <button class="tablinks active">London</button>
-            <button class="tablinks">Paris</button>
+            <button class="tablinks active">Change properties</button>
+            <button class="tablinks">Add comments</button>
             <button class="tablinks">Canvas</button>
         </div>
 
-        <div id="London" class="tabcontent shown">
-            <h3>London</h3>
-            <p>London is the capital city of England.</p>
+        <div id="Change properties" class="tabcontent shown">
+            <h3>Change properties</h3>
+            <p>Change properties of the image.</p>
+            <div class="propertiesChange">
+                <h>Choose effects</h>
+                <form>
+                    <input type="radio" name="gender" > Grayscale<br>
+                    <input type="radio" name="gender" > Blur<br>
+                    <input type="radio" name="gender" > Black and White<br>
+                    <input type="radio" name="gender" > Sepia<br>
+                </form> 
+                <input type="range" min="1" max="100" value="50" class="slider" id="modify">
+            </div>
         </div>
 
-        <div id="Paris" class="tabcontent">
-            <h3>Paris</h3>
-            <p>Paris is the capital of France.</p>
+        <div id="Add comments" class="tabcontent">
+            <h3>Add comments</h3>
+            <p>Add comments to the image.</p>
         </div>
 
         <div id="Canvas" class="tabcontent">
@@ -100,7 +110,7 @@
                 <span class="controller" id="redo">redo</span>
                 <span class="controller" id="pencil">pencil</span>
             </div>
-            <canvas id="canvas1" width="600" height="400" id="paint"></canvas>
+            <canvas width="600" height="400" id="paint"></canvas>
         </div>
 
         <label class="modal-content-btn" for="modal-toggle">OK</label>
@@ -108,4 +118,5 @@
 </div>
 <template id="nameTagTemplate">
 </template>
+
 
