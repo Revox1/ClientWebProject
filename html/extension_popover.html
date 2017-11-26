@@ -1,4 +1,3 @@
-<script src="js/extension_popover.js"></script>
 <div class="container" id="popoverID">
     <header>
         <div class="bio">
@@ -35,17 +34,18 @@
             </div>
             <div class="infos">
 
-            <ul>
-                <li>
-                    Dimensions: 450px X 450px
+                <ul>
+                    <li>
+                        Dimensions: 450px X 450px
 
-                </li>
-                <li>
-                    Alt description: default
+                    </li>
+                    <li>
+                        Alt description: default
 
-                </li>
+                    </li>
 
-            </ul></div>
+                </ul>
+            </div>
         </div>
 
         <div class="data">
@@ -71,7 +71,7 @@
 <div class="modal-container">
     <input id="modal-toggle" type="checkbox">
     <label class="modal-backdrop" for="modal-toggle"></label>
-    <div class="modal-content">
+    <div class="modal-content" id="modal_id">
         <label class="modal-close" for="modal-toggle">&#x2715;</label>
         <h2>IWAI Modal</h2>
         <hr/>
@@ -90,18 +90,18 @@
                 <h>Choose effects</h>
                 <form>
                     <input type="radio" id="grayscale">
-                        <label for ="grayscale">
-                            <span class="prop">Grayscale</span>
-                        </label>
+                    <label for="grayscale">
+                        <span class="prop">Grayscale</span>
+                    </label>
                     <input type="radio" id="blur">
-                        <label for="blur">
-                            <span class="prop">Blur</span>
-                        </label>
+                    <label for="blur">
+                        <span class="prop">Blur</span>
+                    </label>
                     <input type="radio" id="sepia">
-                        <label for="sepia">
-                            <span class="prop">Sepia</span>
-                        </label>
-                </form> 
+                    <label for="sepia">
+                        <span class="prop">Sepia</span>
+                    </label>
+                </form>
                 <input type="range" min="1" max="100" value="50" class="slider" id="modify">
             </div>
         </div>
@@ -113,14 +113,15 @@
 
         <div id="Canvas" class="tabcontent">
             <h1>Canvas pencil, undo, redo</h1>
-            <p>Click the pencil button and draw over the canvas. Use undo and redo buttons to navigate through
+            <p>Click on the canvas below to draw the shape you want.It will draw the line for you,just click where do
+                you want to finish.Use undo and redo buttons to navigate through
                 states.</p>
-            <div id="controllers">
-                <span class="controller" id="undo">undo</span>
-                <span class="controller" id="redo">redo</span>
-                <span class="controller" id="pencil">pencil</span>
+            <div id="controllers" class="buttons">
+                <button class="controller" id="undo">undo</button>
+                <button class="controller" id="redo">redo</button>
+                <button class="controller" id="clear">clear</button>
             </div>
-            <canvas width="600" height="400" id="paint"></canvas>
+            <canvas id="canvas1" width="600" height="400" id="paint"></canvas>
         </div>
 
         <label class="modal-content-btn" for="modal-toggle">OK</label>

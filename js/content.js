@@ -58,7 +58,20 @@ function positionPopupOnPage(event, popover) {
     popover.style.left = (intXOffset + scrollLeft) + 'px';
 
 }
+function add_listeners_for_canvas() {
+    var canvas=document.getElementById(constants.popoverID).shadowRoot.getElementById(constants.canvas_id);
+    canvas.addEventListener('click', drawLine, false);
+    document.getElementById(constants.popoverID).shadowRoot.getElementById('undo').addEventListener('click',function (e) {
+        hist.undo(canvas, canvas.getContext('2d'));
+    });
+    document.getElementById(constants.popoverID).shadowRoot.getElementById('redo').addEventListener('click',function (e) {
+        hist.redo(canvas, canvas.getContext('2d'));
+    });
+    document.getElementById(constants.popoverID).shadowRoot.getElementById('clear').addEventListener('click',function (e) {
+        hist.clear(canvas, canvas.getContext('2d'));
+    });
 
+}
 //todo completely refactor this
 function openCity(evt, cityName) {
 
@@ -116,6 +129,8 @@ window.onload = function () {
             load_url_for_images(constants.popover_img_ids,constants.popover_img_urls);
             load_url_for_images(constants.imageChangePropModalID,constants.imageChangePropModal)
             // document.getElementById(constants.popoverID).shadowRoot.getElementById('canvas1').addEventListener('click', drawLine, false);
+            add_listeners_for_canvas();
+
             window.addEventListener("mouseover", function (event) {
                 if (event.target.tagName === "IMG" && event.target.id != constants.popoverID) {
 
