@@ -20,6 +20,17 @@ function httpGetAsynca(theUrl, callback) {
     xmlHttp.send(null);
 }
 
+function setCssClass(event, className){
+    var img;
+    img=document.getElementById(constants.popoverID).shadowRoot.getElementById("modalImage");
+    if(img.classList.contains(className)){
+        img.classList.remove(className);
+    }
+    else{
+    img.classList.add(className);
+}
+}
+
 function positionPopupOnPage(event, popover) {
     var scrollLeft = (window.pageXOffset !== undefined) ? window.pageXOffset : (document.documentElement || document.body.parentNode || document.body).scrollLeft;
     var scrollTop = (window.pageYOffset !== undefined) ? window.pageYOffset : (document.documentElement || document.body.parentNode || document.body).scrollTop;
@@ -103,6 +114,7 @@ window.onload = function () {
             inject2.innerHTML = data;
             shadow.appendChild(inject2);
             load_url_for_images(constants.popover_img_ids,constants.popover_img_urls);
+            load_url_for_images(constants.imageChangePropModalID,constants.imageChangePropModal)
             // document.getElementById(constants.popoverID).shadowRoot.getElementById('canvas1').addEventListener('click', drawLine, false);
             window.addEventListener("mouseover", function (event) {
                 if (event.target.tagName === "IMG" && event.target.id != constants.popoverID) {
@@ -128,11 +140,17 @@ window.onload = function () {
                 }
             });
             var buttons = document.getElementById(constants.popoverID).shadowRoot.querySelectorAll('.tablinks');
+            var properties = document.getElementById(constants.popoverID).shadowRoot.querySelectorAll('.prop');
             buttons.forEach(function (t) {
                 t.addEventListener("click", function (event) {
                     openCity(event, t.innerHTML);
                 });
             });
+            properties.forEach(function(t){
+                t.addEventListener("click",function (event) {
+                    setCssClass(event, t.innerHTML)
+                })
+            })
             window.addEventListener("scroll", function (e) {
                 if (current_popover != undefined) {
                     current_popover.style.display = "none"

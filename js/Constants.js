@@ -4,5 +4,7 @@ const constants = {
     popoverID2:"popoverID",
     modal_button:"open_modal",
     popover_img_urls:["../images/rsz_keep-it-simple-blog.jpg","../images/avatar2.jpg","../images/avatar1.jpg"],
-    popover_img_ids:["popover_img1","popover_img2","popover_img3"]
+    popover_img_ids:["popover_img1","popover_img2","popover_img3"],
+    imageChangePropModal:["../images/avatar2.jpg"],
+    imageChangePropModalID:["modalImage"]
 };

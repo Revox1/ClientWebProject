@@ -1,3 +1,4 @@
+<script src="js/extension_popover.js"></script>
 <div class="container" id="popoverID">
     <header>
         <div class="bio">
@@ -84,13 +85,22 @@
         <div id="Change properties" class="tabcontent shown">
             <h3>Change properties</h3>
             <p>Change properties of the image.</p>
+            <img id="modalImage">
             <div class="propertiesChange">
                 <h>Choose effects</h>
                 <form>
-                    <input type="radio" name="gender" > Grayscale<br>
-                    <input type="radio" name="gender" > Blur<br>
-                    <input type="radio" name="gender" > Black and White<br>
-                    <input type="radio" name="gender" > Sepia<br>
+                    <input type="radio" id="grayscale">
+                        <label for ="grayscale">
+                            <span class="prop">Grayscale</span>
+                        </label>
+                    <input type="radio" id="blur">
+                        <label for="blur">
+                            <span class="prop">Blur</span>
+                        </label>
+                    <input type="radio" id="sepia">
+                        <label for="sepia">
+                            <span class="prop">Sepia</span>
+                        </label>
                 </form> 
                 <input type="range" min="1" max="100" value="50" class="slider" id="modify">
             </div>
