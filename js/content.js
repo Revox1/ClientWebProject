@@ -153,7 +153,6 @@ window.onload = function () {
             inject2.innerHTML = data;
             shadow.appendChild(inject2);
             load_url_for_images(constants.popover_img_ids, constants.popover_img_urls);
-            // load_url_for_images(constants.imageChangePropModalID, constants.imageChangePropModal);
             add_listeners_for_canvas();
             change_comments();
             window.addEventListener("mouseover", function (event) {
@@ -190,7 +189,7 @@ window.onload = function () {
                 t.addEventListener("click", function (event) {
                     setCssClass(event, t.innerHTML)
                 })
-            })
+            });
             window.addEventListener("scroll", function (e) {
                 if (current_popover != undefined) {
                     current_popover.style.display = "none"
