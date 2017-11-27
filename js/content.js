@@ -1,3 +1,17 @@
+function change_comments(){
+    document.getElementById(constants.popoverID).shadowRoot
+        .getElementById(constants.select_comment_id)
+        .addEventListener('change', function (e) {
+            var options = document.getElementById(constants.popoverID).shadowRoot.querySelectorAll('.casuta-comment');
+            var target = document.getElementById(constants.popoverID).shadowRoot.getElementById(e.target.value);
+            console.log(target,e.target.value);
+            for (i = 0; i < options.length; i++) {
+                options[i].classList.remove("shown");
+            }
+            target.classList.add("shown")
+        });
+}
+
 function findAncestor(el, cls) {
     while ((el = el.parentElement) && !el.classList.contains(cls)) ;
     return el;
@@ -133,7 +147,7 @@ window.onload = function () {
             load_url_for_images(constants.popover_img_ids, constants.popover_img_urls);
             load_url_for_images(constants.imageChangePropModalID, constants.imageChangePropModal);
             add_listeners_for_canvas();
-            // change_comments();
+             change_comments();
             window.addEventListener("mouseover", function (event) {
                 if (event.target.tagName === "IMG" && event.target.id != constants.popoverID) {
 
