@@ -4,7 +4,6 @@
     box-sizing: border-box;
     padding: 0;
     z-index: 8000;
-    /*margin: 0;*/
 }
 
 header {
@@ -68,9 +67,7 @@ header {
 .avatarcontainer {
     position: absolute;
     bottom: 0;
-
     left: 25px;
-
     margin: auto;
     width: 70px;
     /*height: 70px;*/
@@ -90,11 +87,6 @@ header {
     overflow: hidden;
     position: relative;
 }
-
-/*.avatar img {
-    width: 45px;
-    height: 45px;
-}*/
 
 .avatar:hover + .hover {
     opacity: 1;
@@ -287,6 +279,9 @@ header {
     transition: opacity 0.2s ease-in;
 }
 
+/*.modal-container .modal-content{
+    overflow: scroll;
+}*/
 .modal-container .modal-close {
     color: #aaa;
     position: absolute;
@@ -308,7 +303,7 @@ header {
 
 .modal-container .modal-content-btn {
     /*position: absolute;*/
-    float:right;
+    float: right;
     text-align: center;
     cursor: pointer;
     bottom: 20px;
@@ -368,9 +363,15 @@ header {
 }
 
 .modal-content .tab {
-    overflow: hidden;
-    border: 1px solid #ccc;
+    /* !*overflow: hidden;*!
+     overflow: auto;*/
+    /*border: 1px solid #ccc;*/
     background-color: #f1f1f1;
+
+}
+
+.modal-content .tabcontent {
+    text-align: center;
 }
 
 /* Style the buttons inside the tab */
@@ -379,8 +380,9 @@ header {
     float: left;
     border: none;
     outline: none;
+    width: 33%;
     cursor: pointer;
-    padding: 14px 16px;
+    padding: 12px 14px;
     transition: 0.3s;
     font-size: 17px;
 }
@@ -400,18 +402,24 @@ header {
     padding: 6px 12px;
     -webkit-animation: fadeEffect 1s;
     animation: fadeEffect 1s;
+    max-height: calc(100vh - 210px);
+    overflow-y: auto;
+}
+
+.modal-content ::-webkit-scrollbar {
+    display: none;
 }
 
 .modal-content .shown {
     display: block;
+
 }
 
 .modal-container #controllers {
-    width: 600px;
+
     font-size: 0.8em;
     color: #333;
-    margin-left:0;
-    margin: 0.8em;
+
 }
 
 .modal-container #paint {
@@ -446,14 +454,14 @@ header {
 }
 
 canvas {
+    margin: auto;
     border: solid 1px;
 }
 
 .buttons {
     white-space: nowrap;
     min-height: 33px;
-    margin-bottom: 30px;
-    margin-left: 30px
+    margin-bottom: 15px;
 }
 
 .buttons button {
@@ -489,7 +497,6 @@ canvas {
     color: #e4e3ce;
 }
 
-
 .buttons button:last-of-type {
     -webkit-border-radius: 0 7px 7px 0;
     -moz-border-radius: 0 7px 7px 0;
@@ -507,6 +514,165 @@ canvas {
     left: 0;
 }
 
+.select_shape .select {
+    margin: auto;
+    margin-bottom: 0.5em;
+}
+
+.select_shape div {
+    margin: 0.7em;
+}
+
+select {
+    -webkit-appearance: none;
+    outline: 0;
+    box-shadow: none;
+    border: 0 !important;
+    background: #8652bd;
+    background-image: none;
+    width: 100%;
+    border-radius: 5px;
+    height: 100%;
+    padding: 0 0 0 .5em;
+    color: #fff;
+    cursor: pointer;
+}
+
+.select {
+    position: relative;
+    display: block;
+
+    width: 11em;
+    height: 3em;
+    line-height: 3;
+
+    overflow: hidden;
+    border-radius: .25em;
+}
+
+select::-ms-expand {
+    display: none;
+}
+
+/* Arrow */
+.select::after {
+    margin-top: 2px;
+    content: '\25BC';
+    position: absolute;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    padding: 0 1em;
+    background: #962fbb;
+    border-radius: 9px;
+    pointer-events: none;
+}
+
+/* Transition */
+.select:hover::after {
+    color: #fefeff;
+}
+
+.select::after {
+    -webkit-transition: .25s all ease;
+    -o-transition: .25s all ease;
+    transition: .25s all ease;
+}
+
+[tooltip] {
+    margin: 20px 60px;
+    position: relative;
+    display: inline-block;
+}
+
+[tooltip] svg {
+    height: 12px;
+    width: 14px;
+}
+
+[tooltip]::before {
+    content: "";
+    position: absolute;
+    top: -6px;
+    left: 50%;
+    transform: translateX(-50%);
+    border-width: 4px 6px 0 6px;
+    border-style: solid;
+    border-color: rgba(0, 0, 0, 0.7) transparent transparent transparent;
+    z-index: 99;
+    opacity: 0;
+}
+
+[tooltip-position='left']::before {
+    left: 0%;
+    top: 50%;
+    margin-left: -12px;
+    transform: translatey(-50%) rotate(-90deg)
+}
+
+[tooltip-position='top']::before {
+    left: 50%;
+}
+
+[tooltip-position='buttom']::before {
+    top: 100%;
+    margin-top: 8px;
+    transform: translateX(-50%) translatey(-100%) rotate(-180deg)
+}
+
+[tooltip-position='right']::before {
+    left: 100%;
+    top: 50%;
+    margin-left: 1px;
+    transform: translatey(-50%) rotate(90deg)
+}
+
+[tooltip]::after {
+    content: attr(tooltip);
+    position: absolute;
+    left: 50%;
+    top: -6px;
+    transform: translateX(-50%) translateY(-100%);
+    background: rgba(0, 0, 0, 0.7);
+    text-align: center;
+    color: #fff;
+    padding: 4px 2px;
+    font-size: 12px;
+    min-width: 80px;
+    border-radius: 5px;
+    pointer-events: none;
+    padding: 4px 4px;
+    z-index: 99;
+    opacity: 0;
+}
+
+[tooltip-position='left']::after {
+    left: 0%;
+    top: 50%;
+    margin-left: -8px;
+    transform: translateX(-100%) translateY(-50%);
+}
+
+[tooltip-position='top']::after {
+    left: 50%;
+}
+
+[tooltip-position='buttom']::after {
+    top: 100%;
+    margin-top: 8px;
+    transform: translateX(-50%) translateY(0%);
+}
+
+[tooltip-position='right']::after {
+    left: 100%;
+    top: 50%;
+    margin-left: 8px;
+    transform: translateX(0%) translateY(-50%);
+}
+
+[tooltip]:hover::after, [tooltip]:hover::before {
+    opacity: 1
+}
 
 #slidecontainer {
     width: 100%;
