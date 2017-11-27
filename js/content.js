@@ -8,7 +8,15 @@ function change_comments(){
             for (i = 0; i < options.length; i++) {
                 options[i].classList.remove("shown");
             }
-            target.classList.add("shown")
+            if(e.target.value==="objectAll")
+            {
+                for (i = 0; i < options.length; i++) {
+                options[i].classList.add("shown");
+            }
+            }
+            else{
+            target.classList.add("shown");
+        }
         });
 }
 
@@ -147,7 +155,7 @@ window.onload = function () {
             load_url_for_images(constants.popover_img_ids, constants.popover_img_urls);
             load_url_for_images(constants.imageChangePropModalID, constants.imageChangePropModal);
             add_listeners_for_canvas();
-             change_comments();
+            change_comments();
             window.addEventListener("mouseover", function (event) {
                 if (event.target.tagName === "IMG" && event.target.id != constants.popoverID) {
 
