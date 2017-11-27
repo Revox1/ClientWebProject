@@ -91,6 +91,7 @@ function openTab(evt, tabName) {
     evt.currentTarget.className += " active";
 }
 
+
 function getViewPortWidthHeight() {
 
     var viewPortWidth;
@@ -130,16 +131,15 @@ window.onload = function () {
             inject2.innerHTML = data;
             shadow.appendChild(inject2);
             load_url_for_images(constants.popover_img_ids, constants.popover_img_urls);
-            load_url_for_images(constants.imageChangePropModalID, constants.imageChangePropModal)
-            // document.getElementById(constants.popoverID).shadowRoot.getElementById('canvas1').addEventListener('click', drawLine, false);
+            load_url_for_images(constants.imageChangePropModalID, constants.imageChangePropModal);
             add_listeners_for_canvas();
-
+            // change_comments();
             window.addEventListener("mouseover", function (event) {
                 if (event.target.tagName === "IMG" && event.target.id != constants.popoverID) {
 
                     var popover = document.getElementById(constants.popoverID).shadowRoot.getElementById(constants.popoverID2);
                     positionPopupOnPage(event, popover);
-
+                    add_hovered_img(event.target.src);
                     if (current_popover === undefined) {
                         var modal = document.getElementById(constants.popoverID).shadowRoot.getElementById(constants.modal_button);
 

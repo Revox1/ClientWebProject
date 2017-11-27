@@ -1,10 +1,11 @@
 
 var lastClick = [0, 0];
-
+var canvas_img;
 
 var hist = {
     redo_list: [],
     undo_list: [],
+    image:null,
     saveState: function (canvas, list, keep_redo) {
         keep_redo = keep_redo || false;
         if (!keep_redo) {
@@ -33,9 +34,22 @@ var hist = {
     },
     clear: function (canvas, ctx) {
         ctx.clearRect(0, 0, 600, 400);
+        ctx.drawImage(this.image, 0, 0, 600, 400, 0, 0, 600, 400)
     }
 };
+function add_hovered_img(img)
+{
+    var base_image = new Image();
+    base_image.setAttribute('crossOrigin', 'anonymous');
+    base_image.src =img;
+    base_image.onload = function(){
 
+        ctx =document.getElementById(constants.popoverID).shadowRoot.getElementById(constants.canvas_id).getContext('2d');
+        ctx.clearRect(0, 0, 600, 400);
+        ctx.drawImage(base_image, 0, 0, 600, 400, 0, 0, 600, 400);
+        hist.image=base_image;
+    }
+}
 function drawLine(e) {
     context = this.getContext('2d');
     x = e.clientX - document.getElementById(constants.popoverID).shadowRoot.getElementById(constants.canvas_id).getBoundingClientRect().x;
