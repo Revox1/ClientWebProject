@@ -724,3 +724,29 @@ select::-ms-expand {
 .Sepia {
     filter: sepia(100%);
 }
+
+textarea:focus, input:focus{
+    outline: none;
+}
+
+.dropdown-obiecte:focus {outline:0;}
+
+.user-name{
+    float:left;
+
+}
+
+.data-postare-comment{
+    float:right;
+    font-size:80%;
+    color:#474747;
+}
+
+.casuta-comment{
+    border-radius:5px;
+    padding:5px;
+    margin:0 auto;
+    width:300px;
+    text-align:center;
+    background-color:#8884ff;
+}

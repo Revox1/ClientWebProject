@@ -108,7 +108,61 @@
 
         <div id="Comments" class="tabcontent">
             <h3>Add comments</h3>
+            <p style="float:right;">Pick object:</p>
             <p>Add comments to the image.</p>
+
+            <br/>
+            <select class="dropdown-obiecte" style="float:right;">
+                <option value="object1">Object 1</option>
+                <option value="object2">Object 2</option>
+                <option value="object3">Object 3</option>
+                <option value="object4">Object 4</option>
+            </select>
+
+            <div class="formular-comment">
+                    <form action="/action_page.php" id="usrform">
+                         Name: <input type="text" name="usrname" style="width:150px;">
+                            <br/>
+                            <br/>
+                        <input type="submit" value=" Submit " class="modal-content-btn" style="float:left;width:70px;">
+                        <br/>
+                        <br/>
+                    </form>
+                    <br>
+                    <textarea rows="9" cols="60" name="comment" form="usrform"> Enter your comment here..</textarea>
+                </div>
+                <br/>
+                <div id="Object 1" class="casuta-comment">
+                         <p class="user-name"> <b>Marian Popescu</b> says:</p>
+                           <br/>
+                          <br/>
+                      <p class="comment-text">Lorem ipsum dolor sit amet, cu mandamus temporibus mea, eu est ridens ceteros.</p>
+                      <p class="data-postare-comment">Posted at 17-11-2017 11:23 AM </p>
+                              <br/>
+                              <br/>
+                    </div>
+                    <br/>
+                        <br/>
+
+                    <div id="Object 1" class="casuta-comment">
+                    <p class="user-name"> <b>George Mihalache</b> says:</p>
+                    <br/>
+                        <br/>
+                         <p class="comment-text">Lorem ipsum dolor sit amet, cu mandamus temporibus mea, eu est ridens ceteros. Nam cu ipsum aeque fastidii, vim ne quas porro tacimates. Ea option veritus sea. </p>
+                        <p class="data-postare-comment">Posted at 09-10-2017 09:20 AM </p>
+                        <br/>
+                     <br/>
+                    </div>
+
+                    <div id="Object 2" class="casuta-comment">
+                    <p class="user-name"> <b>Martin</b> says:</p>
+                    <br/>
+                        <br/>
+                         <p class="comment-text">Lorem ipsum dolor sit amet, cu mandamus temporibus mea, eu est ridens ceteros. Nam cu ipsum aeque fastidii, vim ne quas porro tacimates. Ea option veritus sea. </p>
+                        <p class="data-postare-comment">Posted at 09-10-2017 01:20 AM </p>
+                        <br/>
+                     <br/>
+                    </div>
         </div>
 
         <div id="Canvas" class="tabcontent">
