@@ -3,10 +3,17 @@
 <head>
     <meta charset="UTF-8">
     <link rel="stylesheet" type="text/css" href="/css/popup.css">
+    <script src="https://www.gstatic.com/firebasejs/4.8.1/firebase.js"></script>
+    <script src="../js/firebase.js"></script>
+
     <title>Title</title>
 </head>
 <body >
 <h1>IWAI Extension</h1>
+<h3>Welcome  <span id="quickstart-sign-in-status">Anonymous</span>!</h3>
+<div class="quickstart-user-details-container">
+    <button id="quickstart-button">Sign-in with Google</button>
+</div>
 <div class="enableDisableSection">
 	<p>Enable/Disable extension</p>
 	<div class="onoffswitch">

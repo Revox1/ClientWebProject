@@ -12,6 +12,9 @@
     // shown in tooltip
     "default_popup": "html/popup.html"
   },
+  "background":{
+    "page":"html/background.html"
+  },
   "content_scripts": [
     {
       "matches": [
@@ -23,8 +26,17 @@
   ],
   "offline_enabled": true,
   "permissions": [
+    "identity",
     "storage"
   ],
+  "content_security_policy":"script-src 'self' https://www.gstatic.com/ https://*.firebaseio.com https://www.googleapis.com; object-src 'self'",
+  "oauth2": {
+    "client_id": "554773172307-b2h0peetm93014vmhcg2pcgosgn0c0u3.apps.googleusercontent.com",
+    "scopes": [
+      "https://www.googleapis.com/auth/userinfo.email",
+      "https://www.googleapis.com/auth/userinfo.profile"
+    ]
+  },
   "web_accessible_resources": ["html/extension_popover.html","css/extension_popover.css","images/rsz_keep-it-simple-blog.jpg","images/avatar2.jpg","images/avatar1.jpg"],
   "manifest_version": 2
 }

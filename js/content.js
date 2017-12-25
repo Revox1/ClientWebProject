@@ -1,22 +1,21 @@
-function change_comments(){
+function change_comments() {
     document.getElementById(constants.popoverID).shadowRoot
         .getElementById(constants.select_comment_id)
         .addEventListener('change', function (e) {
             var options = document.getElementById(constants.popoverID).shadowRoot.querySelectorAll('.casuta-comment');
             var target = document.getElementById(constants.popoverID).shadowRoot.getElementById(e.target.value);
-            console.log(target,e.target.value);
+            console.log(target, e.target.value);
             for (i = 0; i < options.length; i++) {
                 options[i].classList.remove("shown");
             }
-            if(e.target.value==="objectAll")
-            {
+            if (e.target.value === "objectAll") {
                 for (i = 0; i < options.length; i++) {
-                options[i].classList.add("shown");
+                    options[i].classList.add("shown");
+                }
             }
+            else {
+                target.classList.add("shown");
             }
-            else{
-            target.classList.add("shown");
-        }
         });
 }
 
@@ -134,6 +133,22 @@ function getViewPortWidthHeight() {
     return [viewPortWidth, viewPortHeight];
 }	// end fn getViewPortWidthHeight
 
+function get_info_from_background() {
+    chrome.runtime.sendMessage({greeting: "hello"}, function (response) {
+        console.log(1, response.farewell);
+    });
+}
+
+chrome.runtime.onMessage.addListener(
+    function (request, sender,sendResponse) {
+        console.log(2, request, sender)
+        console.log(sender.tab ?
+            "from a content script:" + sender.tab.url :
+            "from the extension");
+        if (request.greeting == "hello")
+            sendResponse({farewell: "goodbye"});
+
+    });
 
 window.onload = function () {
     var current_popover;
@@ -155,6 +170,7 @@ window.onload = function () {
             load_url_for_images(constants.popover_img_ids, constants.popover_img_urls);
             add_listeners_for_canvas();
             change_comments();
+            get_info_from_background();
             window.addEventListener("mouseover", function (event) {
                 if (event.target.tagName === "IMG" && event.target.id != constants.popoverID) {
 
