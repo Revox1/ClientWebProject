@@ -306,6 +306,8 @@ header {
     float: right;
     text-align: center;
     cursor: pointer;
+    padding: 7px;
+    margin: 3px;
     bottom: 20px;
     right: 30px;
     background: #79589e;
@@ -459,6 +461,11 @@ canvas {
 
 }
 
+#logged {
+    color: red;
+    display: flex;
+    justify-content: center;
+}
 .buttons {
     white-space: nowrap;
     min-height: 33px;
@@ -581,7 +588,7 @@ canvas {
 }
 
 [tooltip] {
-    margin: 20px 60px;
+    /*margin: 20px 60px;*/
     position: relative;
     display: inline-block;
 }
@@ -753,4 +760,9 @@ textarea:focus, input:focus {
     width: 300px;
     text-align: center;
     background-color: #8884ff;
+}
+
+.area {
+    background-color: #4CAF50;
+    border-radius: 5px;
 }

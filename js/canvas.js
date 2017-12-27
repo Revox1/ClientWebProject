@@ -1,8 +1,12 @@
 var lastClick = [0, 0];
-
+var modifications = {deletedShapes: []};
 var hist = {
+    currentUser: null,
+    currentShapes: {},
     redo_list: [],
     undo_list: [],
+    save_points: [],
+    redo_undo_points: [],
     image: null,
     saveState: function (canvas, list, keep_redo) {
         keep_redo = keep_redo || false;
@@ -14,9 +18,19 @@ var hist = {
     },
     undo: function (canvas, ctx) {
         this.restoreState(canvas, ctx, this.undo_list, this.redo_list);
+
+        if (hist.save_points.length) {
+            hist.redo_undo_points.push(hist.save_points.pop(), hist.save_points.pop())
+        }
+
     },
     redo: function (canvas, ctx) {
+
         this.restoreState(canvas, ctx, this.redo_list, this.undo_list);
+        if (hist.redo_undo_points.length) {
+            hist.save_points.push(hist.redo_undo_points.pop(), hist.redo_undo_points.pop());
+        }
+
     },
     restoreState: function (canvas, ctx, pop, push) {
         if (pop.length) {
@@ -32,9 +46,14 @@ var hist = {
         }
     },
     clear: function (canvas, ctx) {
+
         ctx.clearRect(0, 0, hist.image.width, hist.image.height);
         ctx.drawImage(hist.image, 0, 0, hist.image.width, hist.image.height);
         lastClick = [0, 0];
+        hist.save_points = [];
+        hist.redo_undo_points = [];
+        hist.redo_list = [];
+        hist.undo_list = [];
     }
 };
 
@@ -48,13 +67,16 @@ function add_hovered_img(img) {
         ctx = canvas.getContext('2d');
         canvas.width = base_image.width;
         canvas.height = base_image.height;
-        canvas.style.width=base_image.width;
-        canvas.style.height=base_image.height;
+        canvas.style.width = base_image.width;
+        canvas.style.height = base_image.height;
         ctx.clearRect(0, 0, base_image.width, base_image.height);
         ctx.drawImage(base_image, 0, 0, base_image.width, base_image.height);
         hist.image = base_image;
-        hist.redo_list=[];
-        hist.undo_list=[];
+        hist.redo_list = [];
+        hist.undo_list = [];
+        hist.savePoints = [];
+        hist.redo_undo_points = [];
+        modifications.deletedShapes = [];
     }
 }
 
@@ -70,6 +92,7 @@ function drawLine(e) {
         context.lineWidth = 5;
         context.beginPath();
         context.moveTo(lastClick[0], lastClick[1]);
+        hist.save_points.push(lastClick[0], lastClick[1]);
         context.lineTo(x, y);
         context.strokeStyle = '#bd5db2';
         context.stroke();
@@ -78,6 +101,3 @@ function drawLine(e) {
 
 
 };
-function consolelog(){
-    console.log("aici")
-}

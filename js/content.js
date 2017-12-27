@@ -93,7 +93,66 @@ function add_listeners_for_canvas() {
     document.getElementById(constants.popoverID).shadowRoot.getElementById('clear').addEventListener('click', function (e) {
         hist.clear(canvas, canvas.getContext('2d'));
     });
+    document.getElementById(constants.popoverID).shadowRoot.getElementById('delete').addEventListener('click', function (e) {
 
+        if (hist.currentUser) {
+            var alt = document.getElementById(constants.popoverID).shadowRoot.getElementById("slct");
+            var strUser = alt.options[alt.selectedIndex].value;
+            var ok = 1;
+            if (strUser != "default") {
+                for (var mod in modifications.deletedShapes) {
+                    if (modifications.deletedShapes[mod] === strUser) {
+                        ok = 0;
+                    }
+                }
+                if (ok) {
+                    modifications.deletedShapes.push(strUser)
+                }
+            }
+        }
+    });
+}
+
+function add_listener_for_save_button() {
+    document.getElementById(constants.popoverID).shadowRoot.getElementById("save_button").addEventListener('click', function (e) {
+        if (hist.currentUser) {
+            if (hist.save_points.length > 4) {
+                if (!hist.currentShapes[hist.image.src]) {
+                    hist.currentShapes[hist.image.src] = []
+                }
+                var select = document.getElementById(constants.popoverID).shadowRoot.getElementById("slct");
+                if (select.options[select.selectedIndex].value !== "default") {
+                    hist.currentShapes[hist.image.src][select.options[select.selectedIndex].value] = hist.save_points;
+                }
+                else {
+                    hist.currentShapes[hist.image.src][hist.currentShapes[hist.image.src].length] = hist.save_points;
+                }
+            }
+            else {
+                //html warning
+            }
+
+            if (modifications.deletedShapes.length > 0) {
+                for (var dele in modifications.deletedShapes) {
+                    hist.currentShapes[hist.image.src].splice(modifications.deletedShapes[dele], 1)
+                }
+                modifications.deletedShapes = [];
+            }
+            add_shapes_img(hist.image.src);
+            hist.clear(document.getElementById(constants.popoverID).shadowRoot.getElementById(constants.canvas_id), document.getElementById(constants.popoverID).shadowRoot.getElementById(constants.canvas_id).getContext('2d'))
+
+            chrome.runtime.sendMessage({
+                task: "save",
+                polygons: hist.currentShapes[hist.image.src],
+                src: hist.image.src
+            }, function (request) {
+                // changes_to_modal(request)
+                get_info_from_background();
+            });
+        }
+
+
+    });
 }
 
 //todo completely refactor this
@@ -134,25 +193,100 @@ function getViewPortWidthHeight() {
 }	// end fn getViewPortWidthHeight
 
 function get_info_from_background() {
-    chrome.runtime.sendMessage({greeting: "hello"}, function (response) {
-        console.log(1, response.farewell);
+    chrome.runtime.sendMessage({task: "get"}, function (request) {
+        changes_to_modal(request);
+        console.log(request);
+        for (var img_url in request.imgs) {
+            hist.currentShapes[img_url] = request.imgs[img_url].shapes;
+        }
+        populate_images_with_maps();
+
     });
 }
 
+function populate_images_with_maps() {
+    for (let img in hist.currentShapes) {
+        let currentImage = document.querySelector(`img[src='${img}']`);
+        currentImage.useMap = '#' + img;
+
+        let innerhtml = `<map name="${img}">`;
+        for (let shape in hist.currentShapes[img]) {
+            innerhtml += `<div class="area"><area shape="poly" coords="${hist.currentShapes[img][shape]}"  href="sun.htm"><div>`
+        }
+        innerhtml += "</map>";
+        currentImage.innerHTML = innerhtml;
+        //aici pt hover si click
+    }
+
+}
 chrome.runtime.onMessage.addListener(
-    function (request, sender,sendResponse) {
+    function (request, sender, sendResponse) {
+        changes_to_modal(request);
         console.log(2, request, sender)
         console.log(sender.tab ?
             "from a content script:" + sender.tab.url :
             "from the extension");
-        if (request.greeting == "hello")
-            sendResponse({farewell: "goodbye"});
 
     });
 
+function changes_to_modal(request) {
+    if (request.info) {
+        hist.currentUser = request.info;
+        document.getElementById(constants.popoverID).shadowRoot.getElementById(constants.currentName).textContent = request.info.displayName;
+        document.getElementById(constants.popoverID).shadowRoot.getElementById(constants.logged).style.display = "none";
+        document.getElementById(constants.popoverID).shadowRoot.getElementById("select_shape").style.display = "block";
+
+    }
+    else {
+        hist.currentUser = null;
+        document.getElementById(constants.popoverID).shadowRoot.getElementById(constants.currentName).textContent = "Anonymous";
+        document.getElementById(constants.popoverID).shadowRoot.getElementById(constants.logged).style.display = "flex";
+        document.getElementById(constants.popoverID).shadowRoot.getElementById("select_shape").style.display = "none";
+    }
+
+}
+
+function add_shapes_img(src) {
+    //clear modifications
+    var select = document.getElementById(constants.popoverID).shadowRoot.getElementById("slct");
+    select.innerHTML = "<option value=\"default\">Current Shape</option>";
+
+    for (var option in hist.currentShapes[src]) {
+        select.innerHTML += `<option value="${option}">Shape ${option}</option>`;
+    }
+    select.addEventListener("change", function () {
+        if (select.value != "default") {
+            var canvas = document.getElementById(constants.popoverID).shadowRoot.getElementById(constants.canvas_id);
+            var context = canvas.getContext('2d');
+            hist.clear(canvas, context);
+
+            for (var i = 0; i < hist.currentShapes[hist.image.src][select.value].length - 2; i += 2) {
+                context.lineWidth = 5;
+                context.beginPath();
+                context.moveTo(hist.currentShapes[hist.image.src][select.value][i], hist.currentShapes[hist.image.src][select.value][i + 1]);
+                context.lineTo(hist.currentShapes[hist.image.src][select.value][i + 2], hist.currentShapes[hist.image.src][select.value][i + 3]);
+                context.strokeStyle = '#bd192e';
+                context.stroke();
+            }
+            context.lineWidth = 5;
+            context.beginPath();
+            context.moveTo(hist.currentShapes[hist.image.src][select.value][i], hist.currentShapes[hist.image.src][select.value][i + 1]);
+            context.lineTo(hist.currentShapes[hist.image.src][select.value][0], hist.currentShapes[hist.image.src][select.value][1]);
+            context.strokeStyle = '#bd192e';
+            context.stroke();
+
+        }
+        else {
+
+        }
+    });
+
+}
+
+
 window.onload = function () {
     var current_popover;
-
+    console.clear()
     httpGetAsynca("html/extension_popover.html", function (data) {
 
         var inject = document.createElement("div");
@@ -169,6 +303,7 @@ window.onload = function () {
             shadow.appendChild(inject2);
             load_url_for_images(constants.popover_img_ids, constants.popover_img_urls);
             add_listeners_for_canvas();
+            add_listener_for_save_button();
             change_comments();
             get_info_from_background();
             window.addEventListener("mouseover", function (event) {
@@ -177,6 +312,7 @@ window.onload = function () {
                     var popover = document.getElementById(constants.popoverID).shadowRoot.getElementById(constants.popoverID2);
                     positionPopupOnPage(event, popover);
                     add_hovered_img(event.target.src);
+                    add_shapes_img(event.target.src);
                     if (current_popover === undefined) {
                         var modal = document.getElementById(constants.popoverID).shadowRoot.getElementById(constants.modal_button);
 
@@ -207,13 +343,13 @@ window.onload = function () {
                 })
             });
             window.addEventListener("scroll", function (e) {
-                if (current_popover != undefined) {
+                if (current_popover !== undefined && current_popover.style != null) {
                     current_popover.style.display = "none"
                 }
 
             });
             window.addEventListener("resize", function (e) {
-                if (current_popover != undefined) {
+                if (current_popover !== undefined) {
 
                     current_popover.style.display = "none"
                 }

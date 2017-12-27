@@ -10,5 +10,6 @@ const constants = {
     modal_container_id:"modal_id",
     canvas_id:"canvas1",
     select_comment_id:"select_comments",
-    currentName:"currentName"
+    currentName: "currentName",
+    logged: "logged"
 };

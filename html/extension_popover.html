@@ -121,49 +121,52 @@
             </select>
 
             <div class="formular-comment">
-                    <form  id="usrform">
-                        Name: <span id="currentName"></span>
-                            <br/>
-                            <br/>
-                        <input type="submit" value=" Submit " class="modal-content-btn" style="float:left;width:70px;">
-                        <br/>
-                        <br/>
-                    </form>
-                    <br>
-                    <textarea rows="9" cols="60" name="comment" form="usrform"> Enter your comment here..</textarea>
-                </div>
+                <form id="usrform">
+                    Name: <span id="currentName"></span>
+                    <br/>
+                    <br/>
+                    <input type="submit" value=" Submit " class="modal-content-btn" style="float:left;width:70px;">
+                    <br/>
+                    <br/>
+                </form>
+                <br>
+                <textarea rows="9" cols="60" name="comment" form="usrform"> Enter your comment here..</textarea>
+            </div>
+            <br/>
+            <div id="object1" class="casuta-comment">
+                <p class="user-name"><b>Marian Popescu</b> says:</p>
                 <br/>
-                <div id="object1" class="casuta-comment">
-                         <p class="user-name"> <b>Marian Popescu</b> says:</p>
-                           <br/>
-                          <br/>
-                      <p class="comment-text">Lorem ipsum dolor sit amet, cu mandamus temporibus mea, eu est ridens ceteros.</p>
-                      <p class="data-postare-comment">Posted at 17-11-2017 11:23 AM </p>
-                              <br/>
-                              <br/>
-                    </div>
-                    <br/>
-                        <br/>
+                <br/>
+                <p class="comment-text">Lorem ipsum dolor sit amet, cu mandamus temporibus mea, eu est ridens
+                    ceteros.</p>
+                <p class="data-postare-comment">Posted at 17-11-2017 11:23 AM </p>
+                <br/>
+                <br/>
+            </div>
+            <br/>
+            <br/>
 
-                    <div id="object2" class="casuta-comment">
-                    <p class="user-name"> <b>George Mihalache</b> says:</p>
-                    <br/>
-                        <br/>
-                         <p class="comment-text">Lorem ipsum dolor sit amet, cu mandamus temporibus mea, eu est ridens ceteros. Nam cu ipsum aeque fastidii, vim ne quas porro tacimates. Ea option veritus sea. </p>
-                        <p class="data-postare-comment">Posted at 09-10-2017 09:20 AM </p>
-                        <br/>
-                     <br/>
-                    </div>
+            <div id="object2" class="casuta-comment">
+                <p class="user-name"><b>George Mihalache</b> says:</p>
+                <br/>
+                <br/>
+                <p class="comment-text">Lorem ipsum dolor sit amet, cu mandamus temporibus mea, eu est ridens ceteros.
+                    Nam cu ipsum aeque fastidii, vim ne quas porro tacimates. Ea option veritus sea. </p>
+                <p class="data-postare-comment">Posted at 09-10-2017 09:20 AM </p>
+                <br/>
+                <br/>
+            </div>
 
-                    <div id="object3" class="casuta-comment">
-                    <p class="user-name"> <b>Martin</b> says:</p>
-                    <br/>
-                        <br/>
-                         <p class="comment-text">Lorem ipsum dolor sit amet, cu mandamus temporibus mea, eu est ridens ceteros. Nam cu ipsum aeque fastidii, vim ne quas porro tacimates. Ea option veritus sea. </p>
-                        <p class="data-postare-comment">Posted at 09-10-2017 01:20 AM </p>
-                        <br/>
-                     <br/>
-                    </div>
+            <div id="object3" class="casuta-comment">
+                <p class="user-name"><b>Martin</b> says:</p>
+                <br/>
+                <br/>
+                <p class="comment-text">Lorem ipsum dolor sit amet, cu mandamus temporibus mea, eu est ridens ceteros.
+                    Nam cu ipsum aeque fastidii, vim ne quas porro tacimates. Ea option veritus sea. </p>
+                <p class="data-postare-comment">Posted at 09-10-2017 01:20 AM </p>
+                <br/>
+                <br/>
+            </div>
         </div>
 
         <div id="Canvas" class="tabcontent">
@@ -172,13 +175,17 @@
                 you want to finish.Use undo and redo buttons to navigate through
                 states.</p>
             <div id="controllers" class="buttons">
+                <button class="controller" id="clear">clear</button>
                 <button class="controller" id="undo">undo</button>
                 <button class="controller" id="redo">redo</button>
-                <button class="controller" id="clear">clear</button>
+                <button class="controller" id="delete"
+                        tooltip="Mark your current shape for delete! (save to take effect)"
+                        tooltip-position="right">delete
+                </button>
             </div>
-            <canvas id="canvas1" ></canvas>
+            <canvas id="canvas1"></canvas>
             <hr>
-            <div class="select_shape">
+            <div class="select_shape" id="select_shape">
                 <h3>Customize your shape</h3>
 
 
@@ -190,9 +197,9 @@
                         <option value="2">Shape 2</option>
                         <option value="3">Shape 3</option>
                     </select>
-
+                    <label class="modal-content-btn" id="delete_button">Delete</label>
                 </div>
-                <div >
+                <div>
                     <label for="img_url">Image Url</label>
                     <input type="text" id="img_url" placeholder="Url...">
                     <div tooltip="Here you add the url of the image you want to display when you hover over this shape!"
@@ -221,8 +228,10 @@
 
             </div>
         </div>
+        <div id="logged">Any changes made wont be saved if u arent logged!!</div>
 
         <label class="modal-content-btn" for="modal-toggle">OK</label>
+        <label class="modal-content-btn" id="save_button">Save</label>
     </div>
 </div>
 <template id="nameTagTemplate">
