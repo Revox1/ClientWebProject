@@ -1,4 +1,3 @@
-var current_img_event;
 function change_comments() {
     document.getElementById(constants.popoverID).shadowRoot
         .getElementById(constants.select_comment_id)
@@ -102,16 +101,32 @@ function add_listeners_for_canvas() {
             var ok = 1;
             if (strUser != "default") {
                 for (var mod in modifications.deletedShapes) {
-                    if (modifications.deletedShapes[mod] === strUser) {
+                    if (modifications.deletedShapes[Number(mod)] === strUser) {
                         ok = 0;
                     }
                 }
                 if (ok) {
-                    modifications.deletedShapes.push(strUser)
+                    modifications.deletedShapes.push(Number(strUser))
+
                 }
             }
         }
     });
+}
+
+function validateURL(str) {
+    var pattern = new RegExp('^(https?:\/\/)?' + // protocol
+        '((([a-z\d]([a-z\d-]*[a-z\d])*)\.)+[a-z]{2,}|' + // domain name
+        '((\d{1,3}\.){3}\d{1,3}))' + // OR ip (v4) address
+        '(\:\d+)?(\/[-a-z\d%_.~+]*)*' + // port and path
+        '(\?[;&a-z\d%_.~+=-]*)?' + // query string
+        '(\#[-a-z\d_]*)?$', 'i'); // fragment locater
+    if (!pattern.test(str)) {
+        alert("Please enter a valid URL.");
+        return false;
+    } else {
+        return true;
+    }
 }
 
 function add_listener_for_save_button() {
@@ -134,7 +149,10 @@ function add_listener_for_save_button() {
             }
 
             if (modifications.deletedShapes.length > 0) {
+                modifications.deletedShapes = modifications.deletedShapes.sort().reverse();
+
                 for (var dele in modifications.deletedShapes) {
+
                     hist.currentShapes[hist.image.src].splice(modifications.deletedShapes[dele], 1)
                 }
                 modifications.deletedShapes = [];
@@ -208,6 +226,14 @@ function get_info_from_background() {
     });
 
 
+}
+
+function get_metadata_img(img) {
+
+    EXIF.getData(img, function () {
+        var allMetaData = EXIF.getAllTags(this);
+        console.log(2, allMetaData)
+    });
 }
 
 function populate_images_with_maps() {
@@ -324,7 +350,7 @@ function add_listeners(modal, popover, small_box) {
 
     small_box.addEventListener("click", function (event) {
 
-        positionPopupOnPage(current_img_event, popover);
+        positionPopupOnPage(event, popover);
 
     })
 
@@ -360,12 +386,13 @@ window.onload = function () {
 
             window.addEventListener("mouseover", function (event) {
                 if (event.target.tagName === "IMG" && event.target.id != constants.popoverID) {
-                    current_img_event = event;
+
                     var target_positions = getPositionofTargetImage(event.target);
                     small_box.style.top = target_positions.y + "px";
                     small_box.style.left = target_positions.x + "px";
                     small_box.style.display = "block";
 
+                    get_metadata_img(event.target);
                     add_hovered_img(event.target.src);
                     properties_whatever();
                     add_shapes_img(event.target.src);
@@ -397,14 +424,14 @@ window.onload = function () {
             });
             window.addEventListener("scroll", function (e) {
                 if (current_popover !== undefined && current_popover.style != null) {
-                    current_popover.style.display = "none";
+                    popover.style.display = "none";
                 }
 
             });
             window.addEventListener("resize", function (e) {
                 if (current_popover !== undefined) {
                     small_box.style.display = "none";
-                    current_popover.style.display = "none";
+                    popover.style.display = "none"
                 }
             });
         })

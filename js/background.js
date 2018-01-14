@@ -29,6 +29,7 @@ chrome.runtime.onMessage.addListener(
             var currentSite = {};
             starCountRef.on('value', function (snapshot) {
                 var snap = snapshot.val();
+
                 for (var img in snap[firebase.auth().currentUser.uid].site) {
 
                     if (snap[firebase.auth().currentUser.uid].site[img].url == sender.tab.url) {
@@ -43,7 +44,7 @@ chrome.runtime.onMessage.addListener(
 
 function writeUserData(email) {
     firebase.database().ref('users/' + firebase.auth().currentUser.uid).set({
-        site: [{url: null, img: null.src, shapes: []}],
+        site: [], //  site: [{url: null, img: null, shapes: []}],
         email: email
     });
 }
@@ -52,7 +53,11 @@ function updateUserData(email, request, site) {
     var starCountRef = firebase.database().ref('users/' + firebase.auth().currentUser.uid);
     var updates = {};
     starCountRef.on('value', function (snapshot) {
+
         var snap = snapshot.val();
+        if (snap.site == undefined) {
+            snap.site = [];
+        }
         let ok = 0;
         updates = snap;
         for (var img in snap.site) {
