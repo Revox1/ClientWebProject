@@ -718,21 +718,11 @@ canvas {
     cursor: pointer;
 }
 
+
 #modalImage {
-
+    filter: grayscale(0%) blur(0px) sepia(0%);
 }
 
-.Grayscale {
-    filter: grayscale(100%);
-}
-
-.Blur {
-    filter: blur(10px);
-}
-
-.Sepia {
-    filter: sepia(100%);
-}
 
 textarea:focus, input:focus {
     outline: none;

@@ -89,21 +89,16 @@
             <img id="modalImage">
             <div class="propertiesChange">
                 <h>Choose effects</h>
-                <form>
-                    <input type="radio" id="grayscale">
-                    <label for="grayscale">
-                        <span class="prop">Grayscale</span>
-                    </label>
-                    <input type="radio" id="blur">
-                    <label for="blur">
-                        <span class="prop">Blur</span>
-                    </label>
-                    <input type="radio" id="sepia">
-                    <label for="sepia">
-                        <span class="prop">Sepia</span>
-                    </label>
-                </form>
-                <input type="range" min="1" max="100" value="50" class="slider" id="modify">
+                <div class="controls">
+                    <label>Grayscale:</label>
+                    <input type="range" id="grayscale" min="0" max="100" value="10">
+
+                    <label>Blur:</label>
+                    <input type="range" id="blur" min="0" max="100" value="10">
+
+                    <label>Sepia:</label>
+                    <input type="range" id="sepia" min="0" max="100" value="10">
+                </div>
             </div>
         </div>
 

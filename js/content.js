@@ -367,6 +367,7 @@ window.onload = function () {
                     small_box.style.display = "block";
 
                     add_hovered_img(event.target.src);
+                    properties_whatever();
                     add_shapes_img(event.target.src);
                     current_popover = popover;
 
@@ -403,7 +404,7 @@ window.onload = function () {
             window.addEventListener("resize", function (e) {
                 if (current_popover !== undefined) {
                     small_box.style.display = "none";
-                    current_popover.style.display = "none"
+                    current_popover.style.display = "none";
                 }
             });
         })
