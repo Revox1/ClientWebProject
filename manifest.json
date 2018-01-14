@@ -29,7 +29,7 @@
     "identity",
     "storage"
   ],
-  "content_security_policy":"script-src 'self' https://www.gstatic.com/ https://*.firebaseio.com https://www.googleapis.com; object-src 'self'",
+  "content_security_policy": "script-src 'self' https://www.gstatic.com/ https://*.firebaseio.com https://www.googleapis.com https://cdnjs.cloudflare.com/;  object-src 'self'",
   "oauth2": {
     "client_id": "554773172307-b2h0peetm93014vmhcg2pcgosgn0c0u3.apps.googleusercontent.com",
     "scopes": [

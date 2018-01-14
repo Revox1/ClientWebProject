@@ -1,8 +1,10 @@
 var lastClick = [0, 0];
-var modifications = {deletedShapes: []};
+var modifications = {deletedShapes: [], urls: null};
 var hist = {
+    shapes_added: 0,
     currentUser: null,
     currentShapes: {},
+    current_urls: {},
     redo_list: [],
     undo_list: [],
     save_points: [],

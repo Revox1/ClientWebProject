@@ -27,14 +27,14 @@ chrome.runtime.onMessage.addListener(
         if (request.task === "get") {
             var starCountRef = firebase.database().ref('users');
             var currentSite = {};
+            var currentSit = {};
             starCountRef.on('value', function (snapshot) {
                 var snap = snapshot.val();
 
-                for (var img in snap[firebase.auth().currentUser.uid].site) {
+                for (var counter_img in snap[firebase.auth().currentUser.uid].site) {
 
-                    if (snap[firebase.auth().currentUser.uid].site[img].url == sender.tab.url) {
-                        currentSite[snap[firebase.auth().currentUser.uid].site[img].img] = snap[firebase.auth().currentUser.uid].site[img];
-
+                    if (snap[firebase.auth().currentUser.uid].site[counter_img].url == sender.tab.url) {
+                        currentSite[snap[firebase.auth().currentUser.uid].site[counter_img].img] = snap[firebase.auth().currentUser.uid].site[counter_img];
                     }
                 }
             });
@@ -63,11 +63,12 @@ function updateUserData(email, request, site) {
         for (var img in snap.site) {
             if (snap.site[img].url === site && snap.site[img].img === request.src) {
                 updates.site[img].shapes = request.polygons;
+                updates.site[img].urls = request.urls;
                 ok = 1;
             }
         }
         if (!ok) {
-            updates.site.push({img: request.src, url: site, shapes: request.polygons})
+            updates.site.push({img: request.src, url: site, shapes: request.polygons, urls: request.urls})
         }
     });
 

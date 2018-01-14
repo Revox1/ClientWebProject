@@ -19,11 +19,6 @@ function change_comments() {
         });
 }
 
-function findAncestor(el, cls) {
-    while ((el = el.parentElement) && !el.classList.contains(cls)) ;
-    return el;
-}
-
 function load_url_for_images(ids, urls) {
     var img;
     for (var i = 0; i < ids.length; i++) {
@@ -92,6 +87,7 @@ function add_listeners_for_canvas() {
     });
     document.getElementById(constants.popoverID).shadowRoot.getElementById('clear').addEventListener('click', function (e) {
         hist.clear(canvas, canvas.getContext('2d'));
+        document.getElementById(constants.popoverID).shadowRoot.getElementById("canvas_warning").style.display = "none";
     });
     document.getElementById(constants.popoverID).shadowRoot.getElementById('delete').addEventListener('click', function (e) {
 
@@ -115,23 +111,26 @@ function add_listeners_for_canvas() {
 }
 
 function validateURL(str) {
-    var pattern = new RegExp('^(https?:\/\/)?' + // protocol
-        '((([a-z\d]([a-z\d-]*[a-z\d])*)\.)+[a-z]{2,}|' + // domain name
-        '((\d{1,3}\.){3}\d{1,3}))' + // OR ip (v4) address
-        '(\:\d+)?(\/[-a-z\d%_.~+]*)*' + // port and path
-        '(\?[;&a-z\d%_.~+=-]*)?' + // query string
-        '(\#[-a-z\d_]*)?$', 'i'); // fragment locater
-    if (!pattern.test(str)) {
-        alert("Please enter a valid URL.");
+
+    var regex = /(http|https):\/\/(\w+:{0,1}\w*)?(\S+)(:[0-9]+)?(\/|\/([\w#!:.?+=&%!\-\/]))?/;
+    if (!regex.test(str)) {
+        let warning_text = document.getElementById(constants.popoverID).shadowRoot.getElementById("canvas_warning");
+        warning_text.innerText += constants.warnings.canvas["WrongURL"] + "Error:" + str;
+        warning_text.style.display = "block";
         return false;
     } else {
         return true;
     }
+
 }
 
 function add_listener_for_save_button() {
     document.getElementById(constants.popoverID).shadowRoot.getElementById("save_button").addEventListener('click', function (e) {
         if (hist.currentUser) {
+            var validation = {
+                shape: false,
+                urls: false
+            }
             if (hist.save_points.length > 4) {
                 if (!hist.currentShapes[hist.image.src]) {
                     hist.currentShapes[hist.image.src] = []
@@ -143,31 +142,61 @@ function add_listener_for_save_button() {
                 else {
                     hist.currentShapes[hist.image.src][hist.currentShapes[hist.image.src].length] = hist.save_points;
                 }
+
+                validation.shape = true;
             }
             else {
+                /*  let warning_text= document.getElementById(constants.popoverID).shadowRoot.getElementById("canvas_warning");
+                  warning_text.innerText=constants.warnings.canvas["3points"];
+                  warning_text.style.display="block";*/
                 //html warning
             }
 
             if (modifications.deletedShapes.length > 0) {
                 modifications.deletedShapes = modifications.deletedShapes.sort().reverse();
-
                 for (var dele in modifications.deletedShapes) {
 
                     hist.currentShapes[hist.image.src].splice(modifications.deletedShapes[dele], 1)
+
                 }
                 modifications.deletedShapes = [];
             }
+            var select = document.getElementById(constants.popoverID).shadowRoot.getElementById("slct");
+            get_input_urls_value(select.options[select.selectedIndex].value, 1);
+            if (hist.shapes_added) {
+                for (var prop in modifications.urls) {
+                    if (validateURL(modifications.urls[prop].clicker) && validateURL(modifications.urls[prop].hover)) {
+                        if (hist.current_urls[hist.image.src] == undefined) {
+                            hist.current_urls[hist.image.src] = {}
+                        }
+
+                        hist.current_urls[hist.image.src][Number(prop)] = {
+                            clicker: modifications.urls[prop].clicker,
+                            hover: modifications.urls[prop].hover
+                        };
+                        validation.urls = true;
+
+                    } else {
+                        //warning wrong urls
+                    }
+                }
+                modifications.urls = hist.current_urls[hist.image.src];
+            }
+
             add_shapes_img(hist.image.src);
             hist.clear(document.getElementById(constants.popoverID).shadowRoot.getElementById(constants.canvas_id), document.getElementById(constants.popoverID).shadowRoot.getElementById(constants.canvas_id).getContext('2d'))
-
-            chrome.runtime.sendMessage({
-                task: "save",
-                polygons: hist.currentShapes[hist.image.src],
-                src: hist.image.src
-            }, function (request) {
-                // changes_to_modal(request)
-                get_info_from_background();
-            });
+            hist.shapes_added = 0;
+            if (validation.shape && validation.urls) {
+                chrome.runtime.sendMessage({
+                    task: "save",
+                    polygons: hist.currentShapes[hist.image.src],
+                    src: hist.image.src,
+                    urls: hist.current_urls[hist.image.src]
+                }, function (request) {
+                    // changes_to_modal(request)
+                    get_info_from_background();
+                });
+            }
         }
 
 
@@ -220,6 +249,7 @@ function get_info_from_background() {
 
         for (var img_url in request.imgs) {
             hist.currentShapes[img_url] = request.imgs[img_url].shapes;
+            hist.current_urls[img_url] = request.imgs[img_url].urls;
         }
         populate_images_with_maps();
 
@@ -229,11 +259,11 @@ function get_info_from_background() {
 }
 
 function get_metadata_img(img) {
-
-    EXIF.getData(img, function () {
-        var allMetaData = EXIF.getAllTags(this);
-        console.log(2, allMetaData)
-    });
+    /*
+        EXIF.getData(img, function () {
+            var allMetaData = EXIF.getAllTags(this);
+            console.log(2, allMetaData)
+        });*/
 }
 
 function populate_images_with_maps() {
@@ -319,7 +349,63 @@ function add_shapes_img(src) {
         else {
 
         }
+
+        get_input_urls_value(select.value);
+
+        document.getElementById(constants.popoverID).shadowRoot.getElementById("canvas_warning").style.display = "none";
     });
+
+}
+
+function get_input_urls_value(selectedValue, add) {
+    var input_click = document.getElementById(constants.popoverID).shadowRoot.getElementById("click_url");
+    var input_hover = document.getElementById(constants.popoverID).shadowRoot.getElementById("img_url");
+
+    if (modifications.urls == null || modifications.urls == undefined) {
+        modifications.urls = {};
+    }
+    if (add == 1 && selectedValue == "default") {//warning daca empty string
+        hist.shapes_added = 0;
+        if (hist.current_urls[hist.image.src] == undefined) {
+            hist.current_urls[hist.image.src] = {}
+        }
+        for (var elem in hist.current_urls[hist.image.src]) {
+            hist.shapes_added += 1;
+        }
+
+        selectedValue = hist.shapes_added;
+
+        modifications.urls[selectedValue] = {clicker: input_click.value, hover: input_hover.value}
+        hist.shapes_added += 1;
+        input_click.value = "";
+        input_hover.value = "";
+
+    }
+    else {
+
+        if (selectedValue == "default") {
+            input_click.value = "";
+            input_hover.value = "";
+
+        }
+        else {
+            console.log(add, modifications.urls[selectedValue], input_click.value)
+            if (add == 1) {
+                modifications.urls[selectedValue] = {
+                    clicker: input_click.value,
+                    hover: input_hover.value
+                };
+                console.log(add, modifications.urls[selectedValue], input_click.value)
+                input_click.value = "";
+                input_hover.value = "";
+                hist.shapes_added = 1;
+            } else {
+                input_click.value = hist.current_urls[hist.image.src][selectedValue].clicker;
+                input_hover.value = hist.current_urls[hist.image.src][selectedValue].hover;
+            }
+
+        }
+    }
 
 }
 
