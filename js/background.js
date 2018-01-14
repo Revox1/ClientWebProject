@@ -30,8 +30,10 @@ chrome.runtime.onMessage.addListener(
             starCountRef.on('value', function (snapshot) {
                 var snap = snapshot.val();
                 for (var img in snap[firebase.auth().currentUser.uid].site) {
-                    if (snap[firebase.auth().currentUser.uid].site[img].url === sender.tab.url) {
+
+                    if (snap[firebase.auth().currentUser.uid].site[img].url == sender.tab.url) {
                         currentSite[snap[firebase.auth().currentUser.uid].site[img].img] = snap[firebase.auth().currentUser.uid].site[img];
+
                     }
                 }
             });

@@ -1,3 +1,4 @@
+var current_img_event;
 function change_comments() {
     document.getElementById(constants.popoverID).shadowRoot
         .getElementById(constants.select_comment_id)
@@ -193,15 +194,20 @@ function getViewPortWidthHeight() {
 }	// end fn getViewPortWidthHeight
 
 function get_info_from_background() {
+
     chrome.runtime.sendMessage({task: "get"}, function (request) {
-        changes_to_modal(request);
         console.log(request);
+
+        changes_to_modal(request);
+
         for (var img_url in request.imgs) {
             hist.currentShapes[img_url] = request.imgs[img_url].shapes;
         }
         populate_images_with_maps();
 
     });
+
+
 }
 
 function populate_images_with_maps() {
@@ -219,18 +225,28 @@ function populate_images_with_maps() {
     }
 
 }
+
 chrome.runtime.onMessage.addListener(
     function (request, sender, sendResponse) {
-        changes_to_modal(request);
         console.log(2, request, sender)
         console.log(sender.tab ?
             "from a content script:" + sender.tab.url :
             "from the extension");
 
+        changes_to_modal(request);
+        if (request.info != null) {
+            get_info_from_background()
+        }
+        else {
+
+        }
+        // window.location.reload(true)
+
+
     });
 
 function changes_to_modal(request) {
-    if (request.info) {
+    if (typeof request != "undefined" && typeof request.info != "undefined" && request.info) {
         hist.currentUser = request.info;
         document.getElementById(constants.popoverID).shadowRoot.getElementById(constants.currentName).textContent = request.info.displayName;
         document.getElementById(constants.popoverID).shadowRoot.getElementById(constants.logged).style.display = "none";
@@ -259,20 +275,18 @@ function add_shapes_img(src) {
             var canvas = document.getElementById(constants.popoverID).shadowRoot.getElementById(constants.canvas_id);
             var context = canvas.getContext('2d');
             hist.clear(canvas, context);
-
+            context.lineWidth = 5;
+            context.strokeStyle = '#bd192e';
             for (var i = 0; i < hist.currentShapes[hist.image.src][select.value].length - 2; i += 2) {
-                context.lineWidth = 5;
+
                 context.beginPath();
                 context.moveTo(hist.currentShapes[hist.image.src][select.value][i], hist.currentShapes[hist.image.src][select.value][i + 1]);
                 context.lineTo(hist.currentShapes[hist.image.src][select.value][i + 2], hist.currentShapes[hist.image.src][select.value][i + 3]);
-                context.strokeStyle = '#bd192e';
                 context.stroke();
             }
-            context.lineWidth = 5;
             context.beginPath();
             context.moveTo(hist.currentShapes[hist.image.src][select.value][i], hist.currentShapes[hist.image.src][select.value][i + 1]);
             context.lineTo(hist.currentShapes[hist.image.src][select.value][0], hist.currentShapes[hist.image.src][select.value][1]);
-            context.strokeStyle = '#bd192e';
             context.stroke();
 
         }
@@ -283,10 +297,43 @@ function add_shapes_img(src) {
 
 }
 
+function getPositionofTargetImage(el) {
+    var xPos = 0;
+    var yPos = 0;
+    while (el) {
+        xPos += (el.offsetLeft + el.clientLeft);
+        yPos += (el.offsetTop + el.clientTop);
+        el = el.offsetParent;
+
+    }
+
+
+    return {
+        x: xPos,
+        y: yPos
+    };
+}
+
+function add_listeners(modal, popover, small_box) {
+    add_listeners_for_canvas();
+    add_listener_for_save_button();
+
+    modal.addEventListener("click", function () {
+        popover.style.display = "none"
+    });
+
+    small_box.addEventListener("click", function (event) {
+
+        positionPopupOnPage(current_img_event, popover);
+
+    })
+
+
+}
 
 window.onload = function () {
-    var current_popover;
-    console.clear()
+    var current_popover, small_box, modal, popover;
+    console.clear();
     httpGetAsynca("html/extension_popover.html", function (data) {
 
         var inject = document.createElement("div");
@@ -302,29 +349,34 @@ window.onload = function () {
             inject2.innerHTML = data;
             shadow.appendChild(inject2);
             load_url_for_images(constants.popover_img_ids, constants.popover_img_urls);
-            add_listeners_for_canvas();
-            add_listener_for_save_button();
             change_comments();
             get_info_from_background();
+
+            popover = document.getElementById(constants.popoverID).shadowRoot.getElementById(constants.popoverID2);
+            small_box = document.getElementById(constants.popoverID).shadowRoot.getElementById(constants.small_box);
+            modal = document.getElementById(constants.popoverID).shadowRoot.getElementById(constants.modal_button);
+            //listeners
+            add_listeners(modal, popover, small_box);
+
             window.addEventListener("mouseover", function (event) {
                 if (event.target.tagName === "IMG" && event.target.id != constants.popoverID) {
+                    current_img_event = event;
+                    var target_positions = getPositionofTargetImage(event.target);
+                    small_box.style.top = target_positions.y + "px";
+                    small_box.style.left = target_positions.x + "px";
+                    small_box.style.display = "block";
 
-                    var popover = document.getElementById(constants.popoverID).shadowRoot.getElementById(constants.popoverID2);
-                    positionPopupOnPage(event, popover);
                     add_hovered_img(event.target.src);
                     add_shapes_img(event.target.src);
-                    if (current_popover === undefined) {
-                        var modal = document.getElementById(constants.popoverID).shadowRoot.getElementById(constants.modal_button);
-
-                        modal.addEventListener("click", function () {
-                            popover.style.display = "none"
-                        })
-                    }
-
                     current_popover = popover;
 
                 } else {
+
+                    if (small_box != undefined && event.target.id != constants.popoverID) {
+                        small_box.style.display = "none";
+                    }
                     if (current_popover != undefined && event.target.id !== constants.popoverID) {//null
+
                         current_popover.style.display = "none";
                         current_popover = null;
                     }
@@ -344,13 +396,13 @@ window.onload = function () {
             });
             window.addEventListener("scroll", function (e) {
                 if (current_popover !== undefined && current_popover.style != null) {
-                    current_popover.style.display = "none"
+                    current_popover.style.display = "none";
                 }
 
             });
             window.addEventListener("resize", function (e) {
                 if (current_popover !== undefined) {
-
+                    small_box.style.display = "none";
                     current_popover.style.display = "none"
                 }
             });

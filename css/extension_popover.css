@@ -466,6 +466,7 @@ canvas {
     display: flex;
     justify-content: center;
 }
+
 .buttons {
     white-space: nowrap;
     min-height: 33px;
@@ -765,4 +766,12 @@ textarea:focus, input:focus {
 .area {
     background-color: #4CAF50;
     border-radius: 5px;
+}
+
+.corner_box {
+    width: 25px;
+    display: none;
+    height: 25px;
+    background-color: red;
+    position: absolute;
 }

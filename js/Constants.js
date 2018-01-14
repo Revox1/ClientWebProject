@@ -1,4 +1,5 @@
 const constants = {
+    small_box: "corner-box",
     popoverMainClass:"container",
     popoverID:"unique_popover",
     popoverID2:"popoverID",

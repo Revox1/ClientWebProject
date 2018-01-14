@@ -60,6 +60,7 @@ function startSignIn() {
     document.getElementById('quickstart-button').disabled = true;
     if (firebase.auth().currentUser) {
         firebase.auth().signOut();
+
     } else {
         startAuth(true);
     }
