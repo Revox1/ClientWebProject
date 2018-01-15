@@ -461,7 +461,7 @@ canvas {
 
 }
 
-#logged {
+#logged, #canvas_warning {
     color: red;
     display: flex;
     justify-content: center;
@@ -753,10 +753,6 @@ textarea:focus, input:focus {
     background-color: #8884ff;
 }
 
-.area {
-    background-color: #4CAF50;
-    border-radius: 5px;
-}
 
 .corner_box {
     width: 25px;

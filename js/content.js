@@ -4,7 +4,7 @@ function change_comments() {
         .addEventListener('change', function (e) {
             var options = document.getElementById(constants.popoverID).shadowRoot.querySelectorAll('.casuta-comment');
             var target = document.getElementById(constants.popoverID).shadowRoot.getElementById(e.target.value);
-            console.log(target, e.target.value);
+
             for (i = 0; i < options.length; i++) {
                 options[i].classList.remove("shown");
             }
@@ -127,9 +127,44 @@ function validateURL(str) {
 function add_listener_for_save_button() {
     document.getElementById(constants.popoverID).shadowRoot.getElementById("save_button").addEventListener('click', function (e) {
         if (hist.currentUser) {
+            clear_text()
+
             var validation = {
                 shape: false,
                 urls: false
+            }
+
+            if (modifications.deletedShapes.length > 0) {
+                modifications.deletedShapes = modifications.deletedShapes.sort().reverse();
+                for (var dele in modifications.deletedShapes) {
+
+                    hist.currentShapes[hist.image.src].splice(modifications.deletedShapes[dele], 1)
+
+                }
+                modifications.deletedShapes = [];
+            }
+            var select = document.getElementById(constants.popoverID).shadowRoot.getElementById("slct");
+            get_input_urls_value(select.options[select.selectedIndex].value, 1);
+            if (hist.shapes_added) {
+                for (var prop in modifications.urls) {
+
+                    if (validateURL(modifications.urls[prop].clicker) && validateURL(modifications.urls[prop].hover)) {
+                        if (hist.current_urls[hist.image.src] == undefined) {
+                            hist.current_urls[hist.image.src] = {}
+                        }
+
+                        hist.current_urls[hist.image.src][Number(prop)] = {
+                            clicker: modifications.urls[prop].clicker,
+                            hover: modifications.urls[prop].hover
+                        };
+                        validation.urls = true;
+
+                    } else {
+                        //warning wrong urls
+                    }
+                }
+
+                modifications.urls = hist.current_urls[hist.image.src];
             }
             if (hist.save_points.length > 4) {
                 if (!hist.currentShapes[hist.image.src]) {
@@ -146,46 +181,18 @@ function add_listener_for_save_button() {
                 validation.shape = true;
             }
             else {
-                /*  let warning_text= document.getElementById(constants.popoverID).shadowRoot.getElementById("canvas_warning");
+                if (validation.urls) {
+                    validation.shape = true;
+                }
+                /*
                   warning_text.innerText=constants.warnings.canvas["3points"];
                   warning_text.style.display="block";*/
                 //html warning
             }
-
-            if (modifications.deletedShapes.length > 0) {
-                modifications.deletedShapes = modifications.deletedShapes.sort().reverse();
-                for (var dele in modifications.deletedShapes) {
-
-                    hist.currentShapes[hist.image.src].splice(modifications.deletedShapes[dele], 1)
-
-                }
-                modifications.deletedShapes = [];
-            }
-            var select = document.getElementById(constants.popoverID).shadowRoot.getElementById("slct");
-            get_input_urls_value(select.options[select.selectedIndex].value, 1);
-            if (hist.shapes_added) {
-                for (var prop in modifications.urls) {
-                    if (validateURL(modifications.urls[prop].clicker) && validateURL(modifications.urls[prop].hover)) {
-                        if (hist.current_urls[hist.image.src] == undefined) {
-                            hist.current_urls[hist.image.src] = {}
-                        }
-
-                        hist.current_urls[hist.image.src][Number(prop)] = {
-                            clicker: modifications.urls[prop].clicker,
-                            hover: modifications.urls[prop].hover
-                        };
-                        validation.urls = true;
-
-                    } else {
-                        //warning wrong urls
-                    }
-                }
-                modifications.urls = hist.current_urls[hist.image.src];
-            }
-
             add_shapes_img(hist.image.src);
             hist.clear(document.getElementById(constants.popoverID).shadowRoot.getElementById(constants.canvas_id), document.getElementById(constants.popoverID).shadowRoot.getElementById(constants.canvas_id).getContext('2d'))
             hist.shapes_added = 0;
+
             if (validation.shape && validation.urls) {
                 chrome.runtime.sendMessage({
                     task: "save",
@@ -203,9 +210,18 @@ function add_listener_for_save_button() {
     });
 }
 
+function clear_text() {
+    let warning_text = document.getElementById(constants.popoverID).shadowRoot.getElementById("canvas_warning");
+    warning_text.innerText = "";
+    warning_text.style.display = "none";
+
+    document.getElementById(constants.popoverID).shadowRoot.getElementById("click_url").innerText = "";
+    input_hover = document.getElementById(constants.popoverID).shadowRoot.getElementById("img_url").innerText = "";
+}
+
 //todo completely refactor this
 function openTab(evt, tabName) {
-
+    clear_text()
     var i, tabcontent, tablinks;
     tabcontent = document.getElementById(constants.popoverID).shadowRoot.querySelectorAll(".tabcontent");
     for (i = 0; i < tabcontent.length; i++) {
@@ -269,14 +285,39 @@ function get_metadata_img(img) {
 function populate_images_with_maps() {
     for (let img in hist.currentShapes) {
         let currentImage = document.querySelector(`img[src='${img}']`);
+        // let svg_shapes = `<svg  xmlns="http://www.w3.org/2000/svg" width="${currentImage.offsetWidth}" height="${currentImage.offsetHeight}" style="position:absolute;top:-${currentImage.offsetHeight}px;left:0px">`
         currentImage.useMap = '#' + img;
 
         let innerhtml = `<map name="${img}">`;
+
         for (let shape in hist.currentShapes[img]) {
-            innerhtml += `<div class="area"><area shape="poly" coords="${hist.currentShapes[img][shape]}"  href="sun.htm"><div>`
+            innerhtml += `<area  shape="poly" class="test" coords="${hist.currentShapes[img][shape]}"  href="${hist.current_urls[img][shape].clicker}">`;
+
+            // svg_shapes += `<a href="http://jsfiddle.net/cs5eJ/"><polygon style=" fill:lime;stroke:purple;stroke-width:5;" points="${hist.currentShapes[img][shape]}"></polygon></a>`;
         }
         innerhtml += "</map>";
-        currentImage.innerHTML = innerhtml;
+        // svg_shapes += "</svg>";
+
+
+        currentImage.innerHTML += innerhtml;
+        let areas = document.querySelectorAll(`img[src='${img}']  area[class='test']`);
+        areas.forEach(function (area, index) {
+
+            var img2 = document.querySelector(`img[src='${img}']`);
+            var pre_url;
+            area.addEventListener("mouseover", function () {
+                pre_url = img2.src;
+                img2.src = hist.current_urls[img][index].hover;
+
+            })
+            area.addEventListener("mouseout", function () {
+
+                img2.src = pre_url;
+            })
+        })
+        // currentImage.parentElement.innerHTML+="<div style='position:relative;background-color: #bdc3c7'>"+ svg_shapes +"</div>";
+
+        // document.getElementById(constants.popoverID).shadowRoot.getElementById("whatever").innerHTML="<div style='position:relative;background-color: #bdc3c7'>"+ svg_shapes +"</div>";
         //aici pt hover si click
     }
 
@@ -375,7 +416,7 @@ function get_input_urls_value(selectedValue, add) {
 
         selectedValue = hist.shapes_added;
 
-        modifications.urls[selectedValue] = {clicker: input_click.value, hover: input_hover.value}
+        modifications.urls[selectedValue] = {clicker: input_click.value, hover: input_hover.value};
         hist.shapes_added += 1;
         input_click.value = "";
         input_hover.value = "";
@@ -389,13 +430,13 @@ function get_input_urls_value(selectedValue, add) {
 
         }
         else {
-            console.log(add, modifications.urls[selectedValue], input_click.value)
+
             if (add == 1) {
                 modifications.urls[selectedValue] = {
                     clicker: input_click.value,
                     hover: input_hover.value
                 };
-                console.log(add, modifications.urls[selectedValue], input_click.value)
+
                 input_click.value = "";
                 input_hover.value = "";
                 hist.shapes_added = 1;
