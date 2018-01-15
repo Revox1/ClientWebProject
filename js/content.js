@@ -275,12 +275,24 @@ function get_info_from_background() {
 
 }
 
-function get_metadata_img(img) {
-    /*
-        EXIF.getData(img, function () {
-            var allMetaData = EXIF.getAllTags(this);
-            console.log(2, allMetaData)
-        });*/
+function get_metadata_img(img, popover) {
+    var info_img = document.getElementById(constants.popoverID).shadowRoot.getElementById('infos');
+    var template = `<ul><li>Height:${img.height}px</li>
+                    <li>Width:${img.width}px</li>
+                    <li>Position in page: x:${getPositionofTargetImage(img).x} y:${getPositionofTargetImage(img).y}</li>`;
+    if (img.id) {
+        template += ` <li>Id:${img.id}</li>`;
+    }
+    if (img.alt) {
+        template += ` <li>Description:${img.alt}</li>`;
+    }
+    template += "</ul>";
+    info_img.innerHTML = template;
+
+    /*   EXIF.getData(img, function () {
+           var allMetaData = EXIF.getAllTags(this);
+           console.log(2, allMetaData)
+       });*/
 }
 
 function populate_images_with_maps() {
@@ -548,7 +560,7 @@ window.onload = function () {
                         small_box.style.left = target_positions.x + "px";
                         small_box.style.display = "block";
 
-                        get_metadata_img(event.target);
+                        get_metadata_img(event.target, popover);
                         add_hovered_img(event.target.src);
                         properties_whatever();
                         add_shapes_img(event.target.src);
