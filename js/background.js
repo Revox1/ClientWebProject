@@ -36,31 +36,59 @@ chrome.runtime.onMessage.addListener(
                     }
                 });
             } else {
-                firebase.database().ref('/users/' + firebase.auth().currentUser.uid).once('value').then(function (snapshot) {
-                    if (snapshot.val() == null) {
-                        writeUserData(firebase.auth().currentUser.email)
-                    }
-                });
-
-                if (request.task === "save") {
-                    // console.log(request,sender)
-                    updateUserData(firebase.auth().currentUser.email, request, sender.tab.url)
-                }
-                if (request.task === "get") {
-                    var starCountRef = firebase.database().ref('users');
-                    var currentSite = {};
-                    var currentSit = {};
-                    starCountRef.on('value', function (snapshot) {
-                        var snap = snapshot.val();
-
-                        for (var counter_img in snap[firebase.auth().currentUser.uid].site) {
-
-                            if (snap[firebase.auth().currentUser.uid].site[counter_img].url == sender.tab.url) {
-                                currentSite[snap[firebase.auth().currentUser.uid].site[counter_img].img] = snap[firebase.auth().currentUser.uid].site[counter_img];
+                if (request.task === "save_global") {
+                    updateGlobalData(request, sender.tab.url)
+                } else {
+                    if (firebase.auth().currentUser) {
+                        firebase.database().ref('/users/' + firebase.auth().currentUser.uid).once('value').then(function (snapshot) {
+                            if (snapshot.val() == null) {
+                                writeUserData(firebase.auth().currentUser.email)
                             }
+                        });
+                    }else{
+                        firebase.database().ref('/users/' + 'global').once('value').then(function (snapshot) {
+                            if (snapshot.val() == null) {
+                                writeGlobalData('none')
+                            }
+                        });
+                    }
+
+                    if (request.task === "save") {
+                        // console.log(request,sender)
+                        updateUserData(firebase.auth().currentUser.email, request, sender.tab.url)
+                    }
+                    if (request.task === "get") {
+                        var starCountRef = firebase.database().ref('users');
+                        console.log(starCountRef)
+                        var currentSite = {};
+                        var globalSite = {};
+
+                        starCountRef.on('value', function (snapshot) {
+                            var snap = snapshot.val();
+
+                            if (firebase.auth().currentUser) {
+                                for (var counter_img in snap[firebase.auth().currentUser.uid].site) {
+
+                                    if (snap[firebase.auth().currentUser.uid].site[counter_img].url == sender.tab.url) {
+                                        currentSite[snap[firebase.auth().currentUser.uid].site[counter_img].img] = snap[firebase.auth().currentUser.uid].site[counter_img];
+                                    }
+                                }
+                            }
+
+                            for (var counter_img in snap["global"].site) {
+
+                                if (snap["global"].site[counter_img].url == sender.tab.url) {
+                                    globalSite[snap["global"].site[counter_img].img] = snap["global"].site[counter_img];
+                                }
+                            }
+                        });
+                        var user;
+                        if(firebase.auth().currentUser){
+                            user=firebase.auth().currentUser;
                         }
-                    });
-                    sendResponse({info: firebase.auth().currentUser, imgs: currentSite});
+
+                        sendResponse({info: user, imgs: currentSite, global: globalSite});
+                    }
                 }
             }
         }
@@ -71,6 +99,38 @@ function writeUserData(email) {
         site: [], //  site: [{url: null, img: null, shapes: []}],
         email: email
     });
+}
+function writeGlobalData(email) {
+    firebase.database().ref('users/' + 'global').set({
+        site: [], //  site: [{url: null, img: null, shapes: []}],
+        email: email
+    });
+}
+
+function updateGlobalData(request, site) {
+    var starCountRef = firebase.database().ref('users/global');
+    var updates = {};
+    starCountRef.on('value', function (snapshot) {
+
+        var snap = snapshot.val();
+        if (snap.site == undefined) {
+            snap.site = [];
+        }
+        let ok = 0;
+        updates = snap;
+        for (var img in snap.site) {
+            if (snap.site[img].url === site && snap.site[img].img === request.src) {
+                updates.site[img].shapes = request.polygons;
+                updates.site[img].urls = request.urls;
+                ok = 1;
+            }
+        }
+        if (!ok) {
+            updates.site.push({img: request.src, url: site, shapes: request.polygons, urls: request.urls})
+        }
+    });
+
+    firebase.database().ref('users/global').update(updates);
 }
 
 function updateUserData(email, request, site) {

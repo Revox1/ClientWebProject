@@ -1,4 +1,5 @@
 var remove_listener = false;
+
 function change_comments() {
     document.getElementById(constants.popoverID).shadowRoot
         .getElementById(constants.select_comment_id)
@@ -209,6 +210,25 @@ function add_listener_for_save_button() {
 
 
     });
+    document.getElementById(constants.popoverID).shadowRoot.getElementById("share_button").addEventListener("click", function (e) {
+            if (hist.currentUser) {
+                hist.global_urls = hist.current_urls;
+                hist.globalShapes = hist.currentShapes;
+                chrome.runtime.sendMessage({
+                    task: "save_global",
+                    polygons: hist.currentShapes[hist.image.src],
+                    src: hist.image.src,
+                    urls: hist.current_urls[hist.image.src]
+                }, function (request) {
+                    // changes_to_modal(request)
+                    //get_info_from_background();
+                });
+
+            }
+        }
+    );
+
+
 }
 
 function clear_text() {
@@ -263,10 +283,16 @@ function get_info_from_background() {
         console.log(request);
 
         changes_to_modal(request);
+        if (request.imgs) {
+            for (var img_url in request.imgs) {
+                hist.currentShapes[img_url] = request.imgs[img_url].shapes;
+                hist.current_urls[img_url] = request.imgs[img_url].urls;
 
-        for (var img_url in request.imgs) {
-            hist.currentShapes[img_url] = request.imgs[img_url].shapes;
-            hist.current_urls[img_url] = request.imgs[img_url].urls;
+            }
+        }
+        for (var img_url in request.global) {
+            hist.globalShapes[img_url] = request.global[img_url].shapes;
+            hist.global_urls[img_url] = request.global[img_url].urls;
         }
         populate_images_with_maps();
 
@@ -289,6 +315,32 @@ function get_metadata_img(img, popover) {
     template += "</ul>";
     info_img.innerHTML = template;
 
+    info_img = document.getElementById(constants.popoverID).shadowRoot.getElementById('data');
+    var nr = 0;
+    if (hist.currentShapes[img.src]) {
+
+        for (var el in hist.currentShapes[img.src]) {
+            nr += 1
+        }
+    }
+    if (hist.globalShapes[img.src]) {
+        for (var el in hist.globalShapes[img.src]) {
+            nr += 1
+        }
+    }
+
+    template = `<ul>
+                <li>
+                    ${nr}
+                    <span>Shapes</span>
+                </li>
+                <li>
+                    ${0}
+                    <span>Comments</span>
+                </li>
+
+            </ul>`;
+    info_img.innerHTML = template;
     /*   EXIF.getData(img, function () {
            var allMetaData = EXIF.getAllTags(this);
            console.log(2, allMetaData)
@@ -296,47 +348,107 @@ function get_metadata_img(img, popover) {
 }
 
 function populate_images_with_maps() {
-    for (let img in hist.currentShapes) {
-        let currentImage = document.querySelector(`img[src='${img}']`);
-        // let svg_shapes = `<svg  xmlns="http://www.w3.org/2000/svg" width="${currentImage.offsetWidth}" height="${currentImage.offsetHeight}" style="position:absolute;top:-${currentImage.offsetHeight}px;left:0px">`
-        currentImage.useMap = '#' + img;
+    if (hist.currentUser) {
+        for (let img in hist.currentShapes) {
+            let currentImage = document.querySelector(`img[src='${img}']`);
+            // let svg_shapes = `<svg  xmlns="http://www.w3.org/2000/svg" width="${currentImage.offsetWidth}" height="${currentImage.offsetHeight}" style="position:absolute;top:-${currentImage.offsetHeight}px;left:0px">`
+            currentImage.useMap = '#' + img;
 
-        let innerhtml = `<map name="${img}">`;
+            let innerhtml = `<map name="${img}">`;
 
-        for (let shape in hist.currentShapes[img]) {
-            innerhtml += `<area  shape="poly" class="test" coords="${hist.currentShapes[img][shape]}"  href="${hist.current_urls[img][shape].clicker}">`;
+            for (let shape in hist.currentShapes[img]) {
+                innerhtml += `<area  shape="poly" class="test" coords="${hist.currentShapes[img][shape]}"  href="${hist.current_urls[img][shape].clicker}">`;
 
-            // svg_shapes += `<a href="http://jsfiddle.net/cs5eJ/"><polygon style=" fill:lime;stroke:purple;stroke-width:5;" points="${hist.currentShapes[img][shape]}"></polygon></a>`;
-        }
-        innerhtml += "</map>";
-        // svg_shapes += "</svg>";
+                // svg_shapes += `<a href="http://jsfiddle.net/cs5eJ/"><polygon style=" fill:lime;stroke:purple;stroke-width:5;" points="${hist.currentShapes[img][shape]}"></polygon></a>`;
+            }
+//if he wants
+            for (let shape in hist.globalShapes[img]) {
+                innerhtml += `<area  shape="poly" class="test1" coords="${hist.globalShapes[img][shape]}"  href="${hist.global_urls[img][shape].clicker}">`;
+
+                // svg_shapes += `<a href="http://jsfiddle.net/cs5eJ/"><polygon style=" fill:lime;stroke:purple;stroke-width:5;" points="${hist.currentShapes[img][shape]}"></polygon></a>`;
+            }
+            innerhtml += "</map>";
+            // svg_shapes += "</svg>";
 
 
-        currentImage.innerHTML += innerhtml;
-        let areas = document.querySelectorAll(`img[src='${img}']  area[class='test']`);
-        areas.forEach(function (area, index) {
+            currentImage.innerHTML += innerhtml;
+            let areas = document.querySelectorAll(`img[src='${img}']  area[class='test']`);
+            areas.forEach(function (area, index) {
 
-            var img2 = document.querySelector(`img[src='${img}']`);
-            var pre_url;
-            area.addEventListener("mouseover", function (event) {
-                pre_url = img2.src;
-                img2.src = hist.current_urls[img][index].hover;
-                document.addEventListener("keypress", function (e) {
-                    keyaction(e, event)
+                var img2 = document.querySelector(`img[src='${img}']`);
+                var pre_url;
+                area.addEventListener("mouseover", function (event) {
+                    pre_url = img2.src;
+                    img2.src = hist.current_urls[img][index].hover;
+                    document.addEventListener("keypress", function (e) {
+                        keyaction(e, event)
+                    });
+
+                })
+                area.addEventListener("mouseout", function () {
+                    img2.src = pre_url;
+                    document.removeEventListener("keypress", keyaction, false);
+                })
+            });
+            areas = document.querySelectorAll(`img[src='${img}']  area[class='test1']`);
+            areas.forEach(function (area, index) {
+
+                var img2 = document.querySelector(`img[src='${img}']`);
+                var pre_url;
+                area.addEventListener("mouseover", function (event) {
+                    pre_url = img2.src;
+                    img2.src = hist.global_urls[img][index].hover;
+                    document.addEventListener("keypress", function (e) {
+                        keyaction(e, event)
+                    });
+
                 });
-
+                area.addEventListener("mouseout", function () {
+                    img2.src = pre_url;
+                    document.removeEventListener("keypress", keyaction, false);
+                })
             })
-            area.addEventListener("mouseout", function () {
-                img2.src = pre_url;
-                document.removeEventListener("keypress", keyaction, false);
-            })
-        })
-        // currentImage.parentElement.innerHTML+="<div style='position:relative;background-color: #bdc3c7'>"+ svg_shapes +"</div>";
+            // currentImage.parentElement.innerHTML+="<div style='position:relative;background-color: #bdc3c7'>"+ svg_shapes +"</div>";
 
-        // document.getElementById(constants.popoverID).shadowRoot.getElementById("whatever").innerHTML="<div style='position:relative;background-color: #bdc3c7'>"+ svg_shapes +"</div>";
-        //aici pt hover si click
+            // document.getElementById(constants.popoverID).shadowRoot.getElementById("whatever").innerHTML="<div style='position:relative;background-color: #bdc3c7'>"+ svg_shapes +"</div>";
+            //aici pt hover si click
+        }
+    } else {
+        for (let img in hist.globalShapes) {
+            let currentImage = document.querySelector(`img[src='${img}']`);
+            currentImage.useMap = '#' + img;
+
+            let innerhtml = `<map name="${img}">`;
+
+            for (let shape in hist.globalShapes[img]) {
+                innerhtml += `<area  shape="poly" class="test" coords="${hist.globalShapes[img][shape]}"  href="${hist.global_urls[img][shape].clicker}">`;
+            }
+            innerhtml += "</map>";
+
+            currentImage.innerHTML += innerhtml;
+            let areas = document.querySelectorAll(`img[src='${img}']  area[class='test']`);
+            console.log(areas)
+            areas.forEach(function (area, index) {
+
+                var img2 = document.querySelector(`img[src='${img}']`);
+                var pre_url;
+                area.addEventListener("mouseover", function (event) {
+                    pre_url = img2.src;
+                    img2.src = hist.global_urls[img][index].hover;
+                    document.addEventListener("keypress", function (e) {
+                        keyaction(e, event)
+                    });
+
+                })
+                area.addEventListener("mouseout", function () {
+                    img2.src = pre_url;
+                    document.removeEventListener("keypress", keyaction, false);
+                })
+            })
+        }
+
+
     }
-
 }
 
 function keyaction(e, event) {
@@ -366,12 +478,8 @@ chrome.runtime.onMessage.addListener(
             console.log(remove_listener)
         } else {
             changes_to_modal(request);
-            if (request.info != null) {
-                get_info_from_background()
-            }
-            else {
 
-            }
+            get_info_from_background();
         }
         // window.location.reload(true)
 

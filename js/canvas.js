@@ -4,6 +4,8 @@ var hist = {
     shapes_added: 0,
     currentUser: null,
     currentShapes: {},
+    globalShapes:{},
+    global_urls:{},
     current_urls: {},
     redo_list: [],
     undo_list: [],
