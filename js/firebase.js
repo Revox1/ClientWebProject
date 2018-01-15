@@ -73,8 +73,6 @@ window.onload = function () {
 
 
     chrome.runtime.sendMessage({get_pop_info: true}, function (response) {
-        /* button.checked=response.sign;
-         button2.checked=response.global;*/
          var toggleswitch = document.getElementById('switchonoff');
 
          if(response.sign==true){
@@ -100,40 +98,6 @@ window.onload = function () {
         initApp();
     });
 
-    /* button.addEventListener("click", function () {
-         console.log(button.checked)
-         if(button.checked){
-             button.checked=false
-             chrome.runtime.sendMessage({popover: true,sign:false}, function(response) {
-
-             });
-
-
-         }
-         else{
-             button.checked=true
-             chrome.runtime.sendMessage({popover: true,sign:true}, function(response) {
-
-             });
-
-         }
-
-         console.log(button.checked)
-
-
-
-
-     });
-     button2.addEventListener("click", function () {
-         button2.checked=!button2.checked;
-
-         chrome.runtime.sendMessage({popover: true,global:true}, function(response) {
-
-         });
-
-
-     })*/
-
 };
 
 function onoffswitch(){
@@ -141,10 +105,16 @@ function onoffswitch(){
         if (toggleswitch.classList.contains('On')){
                 toggleswitch.classList.remove('On');
                 toggleswitch.classList.add('Off');
+                chrome.runtime.sendMessage({popover: true,sign:false}, function(response) {
+
+             });
                 
             } else {
                 toggleswitch.classList.remove('Off');
                 toggleswitch.classList.add('On');
+                chrome.runtime.sendMessage({popover: true,sign:true}, function(response) {
+
+             });
                 
             }
 }
@@ -154,10 +124,16 @@ function onoffglobalimage(){
         if (toggleglobalimage.classList.contains('On')){
                 toggleglobalimage.classList.remove('On');
                 toggleglobalimage.classList.add('Off');
+                chrome.runtime.sendMessage({popover: true,sign:false}, function(response) {
+
+             });
                 
             } else {
                 toggleglobalimage.classList.remove('Off');
                 toggleglobalimage.classList.add('On');
+                chrome.runtime.sendMessage({popover: true,sign:true}, function(response) {
+
+             });
                 
             }
 }
