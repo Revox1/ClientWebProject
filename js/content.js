@@ -341,17 +341,12 @@ function get_metadata_img(img, popover) {
 
             </ul>`;
     info_img.innerHTML = template;
-    /*   EXIF.getData(img, function () {
-           var allMetaData = EXIF.getAllTags(this);
-           console.log(2, allMetaData)
-       });*/
 }
 
 function populate_images_with_maps() {
     if (hist.currentUser) {
         for (let img in hist.currentShapes) {
             let currentImage = document.querySelector(`img[src='${img}']`);
-            // let svg_shapes = `<svg  xmlns="http://www.w3.org/2000/svg" width="${currentImage.offsetWidth}" height="${currentImage.offsetHeight}" style="position:absolute;top:-${currentImage.offsetHeight}px;left:0px">`
             currentImage.useMap = '#' + img;
 
             let innerhtml = `<map name="${img}">`;
@@ -359,16 +354,13 @@ function populate_images_with_maps() {
             for (let shape in hist.currentShapes[img]) {
                 innerhtml += `<area  shape="poly" class="test" coords="${hist.currentShapes[img][shape]}"  href="${hist.current_urls[img][shape].clicker}">`;
 
-                // svg_shapes += `<a href="http://jsfiddle.net/cs5eJ/"><polygon style=" fill:lime;stroke:purple;stroke-width:5;" points="${hist.currentShapes[img][shape]}"></polygon></a>`;
             }
 //if he wants
             for (let shape in hist.globalShapes[img]) {
                 innerhtml += `<area  shape="poly" class="test1" coords="${hist.globalShapes[img][shape]}"  href="${hist.global_urls[img][shape].clicker}">`;
 
-                // svg_shapes += `<a href="http://jsfiddle.net/cs5eJ/"><polygon style=" fill:lime;stroke:purple;stroke-width:5;" points="${hist.currentShapes[img][shape]}"></polygon></a>`;
             }
             innerhtml += "</map>";
-            // svg_shapes += "</svg>";
 
 
             currentImage.innerHTML += innerhtml;
@@ -408,10 +400,6 @@ function populate_images_with_maps() {
                     document.removeEventListener("keypress", keyaction, false);
                 })
             })
-            // currentImage.parentElement.innerHTML+="<div style='position:relative;background-color: #bdc3c7'>"+ svg_shapes +"</div>";
-
-            // document.getElementById(constants.popoverID).shadowRoot.getElementById("whatever").innerHTML="<div style='position:relative;background-color: #bdc3c7'>"+ svg_shapes +"</div>";
-            //aici pt hover si click
         }
     } else {
         for (let img in hist.globalShapes) {
@@ -427,7 +415,7 @@ function populate_images_with_maps() {
 
             currentImage.innerHTML += innerhtml;
             let areas = document.querySelectorAll(`img[src='${img}']  area[class='test']`);
-            console.log(areas)
+
             areas.forEach(function (area, index) {
 
                 var img2 = document.querySelector(`img[src='${img}']`);
@@ -700,7 +688,7 @@ window.onload = function () {
                 })
             });
             window.addEventListener("scroll", function (e) {
-                comment_popover.style.display = "none"
+                comment_popover.style.display = "none";
                 if (current_popover !== undefined && current_popover.style != null) {
 
                     popover.style.display = "none";
@@ -709,7 +697,7 @@ window.onload = function () {
             });
             window.addEventListener("resize", function (e) {
                 if (current_popover !== undefined) {
-                    comment_popover.style.display = "none"
+                    comment_popover.style.display = "none";
                     small_box.style.display = "none";
                     popover.style.display = "none"
                 }
