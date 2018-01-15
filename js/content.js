@@ -128,86 +128,104 @@ function validateURL(str) {
 
 function add_listener_for_save_button() {
     document.getElementById(constants.popoverID).shadowRoot.getElementById("save_button").addEventListener('click', function (e) {
+
+
         if (hist.currentUser) {
-            clear_text()
+            var tab_active = document.getElementById(constants.popoverID).shadowRoot.querySelector(".tablinks.active");
 
-            var validation = {
-                shape: false,
-                urls: false
-            }
 
-            if (modifications.deletedShapes.length > 0) {
-                modifications.deletedShapes = modifications.deletedShapes.sort().reverse();
-                for (var dele in modifications.deletedShapes) {
-
-                    hist.currentShapes[hist.image.src].splice(modifications.deletedShapes[dele], 1)
-
-                }
-                modifications.deletedShapes = [];
-            }
-            var select = document.getElementById(constants.popoverID).shadowRoot.getElementById("slct");
-            get_input_urls_value(select.options[select.selectedIndex].value, 1);
-            if (hist.shapes_added) {
-                for (var prop in modifications.urls) {
-
-                    if (validateURL(modifications.urls[prop].clicker) && validateURL(modifications.urls[prop].hover)) {
-                        if (hist.current_urls[hist.image.src] == undefined) {
-                            hist.current_urls[hist.image.src] = {}
-                        }
-
-                        hist.current_urls[hist.image.src][Number(prop)] = {
-                            clicker: modifications.urls[prop].clicker,
-                            hover: modifications.urls[prop].hover
-                        };
-                        validation.urls = true;
-
-                    } else {
-                        //warning wrong urls
-                    }
-                }
-
-                modifications.urls = hist.current_urls[hist.image.src];
-            }
-            if (hist.save_points.length > 4) {
-                if (!hist.currentShapes[hist.image.src]) {
-                    hist.currentShapes[hist.image.src] = []
-                }
-                var select = document.getElementById(constants.popoverID).shadowRoot.getElementById("slct");
-                if (select.options[select.selectedIndex].value !== "default") {
-                    hist.currentShapes[hist.image.src][select.options[select.selectedIndex].value] = hist.save_points;
-                }
-                else {
-                    hist.currentShapes[hist.image.src][hist.currentShapes[hist.image.src].length] = hist.save_points;
-                }
-
-                validation.shape = true;
-            }
-            else {
-                if (validation.urls) {
-                    validation.shape = true;
-                }
-                /*
-                  warning_text.innerText=constants.warnings.canvas["3points"];
-                  warning_text.style.display="block";*/
-                //html warning
-            }
-            add_shapes_img(hist.image.src);
-            hist.clear(document.getElementById(constants.popoverID).shadowRoot.getElementById(constants.canvas_id), document.getElementById(constants.popoverID).shadowRoot.getElementById(constants.canvas_id).getContext('2d'))
-            hist.shapes_added = 0;
-
-            if (validation.shape && validation.urls) {
+            if (tab_active.innerHTML == "Properties") {
+                var image=document.getElementById(constants.popoverID).shadowRoot.getElementById(constants.imageChangePropModalID[0]);
+                var css_style=window.getComputedStyle(image).getPropertyValue("filter");
                 chrome.runtime.sendMessage({
-                    task: "save",
-                    polygons: hist.currentShapes[hist.image.src],
+                    task: "save_css",
                     src: hist.image.src,
-                    urls: hist.current_urls[hist.image.src]
+                    css:css_style
                 }, function (request) {
                     // changes_to_modal(request)
                     get_info_from_background();
                 });
             }
-        }
+            else {
+                clear_text();
 
+                var validation = {
+                    shape: false,
+                    urls: false
+                };
+
+                if (modifications.deletedShapes.length > 0) {
+                    modifications.deletedShapes = modifications.deletedShapes.sort().reverse();
+                    for (var dele in modifications.deletedShapes) {
+
+                        hist.currentShapes[hist.image.src].splice(modifications.deletedShapes[dele], 1)
+
+                    }
+                    modifications.deletedShapes = [];
+                }
+                var select = document.getElementById(constants.popoverID).shadowRoot.getElementById("slct");
+                get_input_urls_value(select.options[select.selectedIndex].value, 1);
+                if (hist.shapes_added) {
+                    for (var prop in modifications.urls) {
+
+                        if (validateURL(modifications.urls[prop].clicker) && validateURL(modifications.urls[prop].hover)) {
+                            if (hist.current_urls[hist.image.src] == undefined) {
+                                hist.current_urls[hist.image.src] = {}
+                            }
+
+                            hist.current_urls[hist.image.src][Number(prop)] = {
+                                clicker: modifications.urls[prop].clicker,
+                                hover: modifications.urls[prop].hover
+                            };
+                            validation.urls = true;
+
+                        } else {
+                            //warning wrong urls
+                        }
+                    }
+
+                    modifications.urls = hist.current_urls[hist.image.src];
+                }
+                if (hist.save_points.length > 4) {
+                    if (!hist.currentShapes[hist.image.src]) {
+                        hist.currentShapes[hist.image.src] = []
+                    }
+                    var select = document.getElementById(constants.popoverID).shadowRoot.getElementById("slct");
+                    if (select.options[select.selectedIndex].value !== "default") {
+                        hist.currentShapes[hist.image.src][select.options[select.selectedIndex].value] = hist.save_points;
+                    }
+                    else {
+                        hist.currentShapes[hist.image.src][hist.currentShapes[hist.image.src].length] = hist.save_points;
+                    }
+
+                    validation.shape = true;
+                }
+                else {
+                    if (validation.urls) {
+                        validation.shape = true;
+                    }
+                    /*
+                      warning_text.innerText=constants.warnings.canvas["3points"];
+                      warning_text.style.display="block";*/
+                    //html warning
+                }
+                add_shapes_img(hist.image.src);
+                hist.clear(document.getElementById(constants.popoverID).shadowRoot.getElementById(constants.canvas_id), document.getElementById(constants.popoverID).shadowRoot.getElementById(constants.canvas_id).getContext('2d'))
+                hist.shapes_added = 0;
+
+                if (validation.shape && validation.urls) {
+                    chrome.runtime.sendMessage({
+                        task: "save",
+                        polygons: hist.currentShapes[hist.image.src],
+                        src: hist.image.src,
+                        urls: hist.current_urls[hist.image.src]
+                    }, function (request) {
+                        // changes_to_modal(request)
+                        get_info_from_background();
+                    });
+                }
+            }
+        }
 
     });
     document.getElementById(constants.popoverID).shadowRoot.getElementById("share_button").addEventListener("click", function (e) {
@@ -285,8 +303,10 @@ function get_info_from_background() {
         changes_to_modal(request);
         if (request.imgs) {
             for (var img_url in request.imgs) {
+
                 hist.currentShapes[img_url] = request.imgs[img_url].shapes;
                 hist.current_urls[img_url] = request.imgs[img_url].urls;
+                hist.css[img_url]=request.imgs[img_url].css;
 
             }
         }
@@ -294,6 +314,7 @@ function get_info_from_background() {
             hist.globalShapes[img_url] = request.global[img_url].shapes;
             hist.global_urls[img_url] = request.global[img_url].urls;
         }
+
         populate_images_with_maps();
 
     });
@@ -346,7 +367,9 @@ function get_metadata_img(img, popover) {
 function populate_images_with_maps() {
     if (hist.currentUser) {
         for (let img in hist.currentShapes) {
+
             let currentImage = document.querySelector(`img[src='${img}']`);
+            currentImage.style.filter=hist.css[img];
             currentImage.useMap = '#' + img;
 
             let innerhtml = `<map name="${img}">`;
