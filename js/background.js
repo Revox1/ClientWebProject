@@ -6,39 +6,63 @@ var config = {
     storageBucket: "cliw-8ef3d.appspot.com",
     messagingSenderId: "554773172307"
 };
+var popup_info = {
+    global: false,
+    sign: true
+};
 firebase.initializeApp(config);
 
 chrome.runtime.onMessage.addListener(
     function (request, sender, sendResponse) {
-        /* console.log(sender.tab ?
-             "from a content script:" + sender.tab.url :
-             "from the extension");*/
-
-        firebase.database().ref('/users/' + firebase.auth().currentUser.uid).once('value').then(function (snapshot) {
-            if (snapshot.val() == null) {
-                writeUserData(firebase.auth().currentUser.email)
-            }
-        });
-
-        if (request.task === "save") {
-            // console.log(request,sender)
-            updateUserData(firebase.auth().currentUser.email, request, sender.tab.url)
-        }
-        if (request.task === "get") {
-            var starCountRef = firebase.database().ref('users');
-            var currentSite = {};
-            var currentSit = {};
-            starCountRef.on('value', function (snapshot) {
-                var snap = snapshot.val();
-
-                for (var counter_img in snap[firebase.auth().currentUser.uid].site) {
-
-                    if (snap[firebase.auth().currentUser.uid].site[counter_img].url == sender.tab.url) {
-                        currentSite[snap[firebase.auth().currentUser.uid].site[counter_img].img] = snap[firebase.auth().currentUser.uid].site[counter_img];
-                    }
+        console.log(sender, request);
+        if (request.get_pop_info) {
+            sendResponse({global: popup_info.global, sign: popup_info.sign});
+        } else {
+            if (request.popover) {
+                if (request.global) {
+                    popup_info.global = request.global;
                 }
-            });
-            sendResponse({info: firebase.auth().currentUser, imgs: currentSite});
+                if (request.sign) {
+                    popup_info.sign = request.sign;
+                }
+                chrome.tabs.query({}, function (tabs) {
+                    for (var i = 0; i < tabs.length; ++i) {
+                        chrome.tabs.sendMessage(tabs[i].id, {
+                            popover: true,
+                            sign: popup_info.sign,
+                            global: popup_info.global
+                        }, function (response) {
+                        });
+                    }
+                });
+            } else {
+                firebase.database().ref('/users/' + firebase.auth().currentUser.uid).once('value').then(function (snapshot) {
+                    if (snapshot.val() == null) {
+                        writeUserData(firebase.auth().currentUser.email)
+                    }
+                });
+
+                if (request.task === "save") {
+                    // console.log(request,sender)
+                    updateUserData(firebase.auth().currentUser.email, request, sender.tab.url)
+                }
+                if (request.task === "get") {
+                    var starCountRef = firebase.database().ref('users');
+                    var currentSite = {};
+                    var currentSit = {};
+                    starCountRef.on('value', function (snapshot) {
+                        var snap = snapshot.val();
+
+                        for (var counter_img in snap[firebase.auth().currentUser.uid].site) {
+
+                            if (snap[firebase.auth().currentUser.uid].site[counter_img].url == sender.tab.url) {
+                                currentSite[snap[firebase.auth().currentUser.uid].site[counter_img].img] = snap[firebase.auth().currentUser.uid].site[counter_img];
+                            }
+                        }
+                    });
+                    sendResponse({info: firebase.auth().currentUser, imgs: currentSite});
+                }
+            }
         }
     });
 

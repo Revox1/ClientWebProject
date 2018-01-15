@@ -79,6 +79,7 @@ function add_hovered_img(img) {
         hist.savePoints = [];
         hist.redo_undo_points = [];
         modifications.deletedShapes = [];
+        modifications.urls = null;
     }
 }
 

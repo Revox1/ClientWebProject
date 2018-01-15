@@ -19,6 +19,9 @@ header {
     border-top-right-radius: 8px;
 }
 
+#popover_comentarii header {
+    padding-bottom: 1em;
+}
 .container {
     display: none;
     position: absolute;

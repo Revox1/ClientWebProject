@@ -15,6 +15,7 @@ function initApp() {
             document.getElementById('quickstart-button').textContent = 'Sign out';
             document.getElementById('quickstart-sign-in-status').textContent = user.displayName;
 
+
         } else {
             document.getElementById('quickstart-button').textContent = 'Sign-in with Google';
             document.getElementById('quickstart-sign-in-status').textContent = 'Anonymous';
@@ -56,6 +57,7 @@ function startAuth(interactive) {
 /**
  * Starts the sign-in process.
  */
+
 function startSignIn() {
     document.getElementById('quickstart-button').disabled = true;
     if (firebase.auth().currentUser) {
@@ -67,5 +69,49 @@ function startSignIn() {
 }
 
 window.onload = function () {
-    initApp();
+
+    var button = document.getElementById('myonoffswitch');
+    var button2 = document.getElementById('myhovershortcutswitch');
+
+    chrome.runtime.sendMessage({get_pop_info: true}, function (response) {
+        console.log(button.checked, button2.checked, response)
+        /* button.checked=response.sign;
+         button2.checked=response.global;*/
+
+        initApp();
+    });
+
+    /* button.addEventListener("click", function () {
+         console.log(button.checked)
+         if(button.checked){
+             button.checked=false
+             chrome.runtime.sendMessage({popover: true,sign:false}, function(response) {
+
+             });
+
+
+         }
+         else{
+             button.checked=true
+             chrome.runtime.sendMessage({popover: true,sign:true}, function(response) {
+
+             });
+
+         }
+
+         console.log(button.checked)
+
+
+
+
+     });
+     button2.addEventListener("click", function () {
+         button2.checked=!button2.checked;
+
+         chrome.runtime.sendMessage({popover: true,global:true}, function(response) {
+
+         });
+
+
+     })*/
 };

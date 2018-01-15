@@ -1,3 +1,4 @@
+var remove_listener = false;
 function change_comments() {
     document.getElementById(constants.popoverID).shadowRoot
         .getElementById(constants.select_comment_id)
@@ -305,14 +306,17 @@ function populate_images_with_maps() {
 
             var img2 = document.querySelector(`img[src='${img}']`);
             var pre_url;
-            area.addEventListener("mouseover", function () {
+            area.addEventListener("mouseover", function (event) {
                 pre_url = img2.src;
                 img2.src = hist.current_urls[img][index].hover;
+                document.addEventListener("keypress", function (e) {
+                    keyaction(e, event)
+                });
 
             })
             area.addEventListener("mouseout", function () {
-
                 img2.src = pre_url;
+                document.removeEventListener("keypress", keyaction, false);
             })
         })
         // currentImage.parentElement.innerHTML+="<div style='position:relative;background-color: #bdc3c7'>"+ svg_shapes +"</div>";
@@ -323,19 +327,39 @@ function populate_images_with_maps() {
 
 }
 
+function keyaction(e, event) {
+    if (e.keyCode == 67 && e.shiftKey) {
+        positionPopupOnPage(event, document.getElementById(constants.popoverID).shadowRoot.getElementById(constants.popover_comments))
+
+    }
+
+
+}
+
 chrome.runtime.onMessage.addListener(
     function (request, sender, sendResponse) {
         console.log(2, request, sender)
         console.log(sender.tab ?
             "from a content script:" + sender.tab.url :
             "from the extension");
+        if (request.popover) {
+            if (request.sign === true) {
+                remove_listener = true;
+            } else {
+                remove_listener = false;
+            }
+            if (request.global) {
+                // window.removeEventListener("mouseover",main_listener)
+            }
+            console.log(remove_listener)
+        } else {
+            changes_to_modal(request);
+            if (request.info != null) {
+                get_info_from_background()
+            }
+            else {
 
-        changes_to_modal(request);
-        if (request.info != null) {
-            get_info_from_background()
-        }
-        else {
-
+            }
         }
         // window.location.reload(true)
 
@@ -485,7 +509,7 @@ function add_listeners(modal, popover, small_box) {
 }
 
 window.onload = function () {
-    var current_popover, small_box, modal, popover;
+    var current_popover, small_box, modal, popover, comment_popover;
     console.clear();
     httpGetAsynca("html/extension_popover.html", function (data) {
 
@@ -506,34 +530,40 @@ window.onload = function () {
             get_info_from_background();
 
             popover = document.getElementById(constants.popoverID).shadowRoot.getElementById(constants.popoverID2);
+            comment_popover = document.getElementById(constants.popoverID).shadowRoot.getElementById(constants.popover_comments);
             small_box = document.getElementById(constants.popoverID).shadowRoot.getElementById(constants.small_box);
             modal = document.getElementById(constants.popoverID).shadowRoot.getElementById(constants.modal_button);
             //listeners
             add_listeners(modal, popover, small_box);
 
-            window.addEventListener("mouseover", function (event) {
-                if (event.target.tagName === "IMG" && event.target.id != constants.popoverID) {
-
-                    var target_positions = getPositionofTargetImage(event.target);
-                    small_box.style.top = target_positions.y + "px";
-                    small_box.style.left = target_positions.x + "px";
-                    small_box.style.display = "block";
-
-                    get_metadata_img(event.target);
-                    add_hovered_img(event.target.src);
-                    properties_whatever();
-                    add_shapes_img(event.target.src);
-                    current_popover = popover;
-
+            window.addEventListener("mouseover", function main_listener(event) {
+                if (remove_listener) {
+                    console.log("inside")
+                    // this.removeEventListener('mouseover', arguments.callee);
                 } else {
+                    if (event.target.tagName === "IMG" && event.target.id != constants.popoverID) {
 
-                    if (small_box != undefined && event.target.id != constants.popoverID) {
-                        small_box.style.display = "none";
-                    }
-                    if (current_popover != undefined && event.target.id !== constants.popoverID) {//null
+                        var target_positions = getPositionofTargetImage(event.target);
+                        small_box.style.top = target_positions.y + "px";
+                        small_box.style.left = target_positions.x + "px";
+                        small_box.style.display = "block";
 
-                        current_popover.style.display = "none";
-                        current_popover = null;
+                        get_metadata_img(event.target);
+                        add_hovered_img(event.target.src);
+                        properties_whatever();
+                        add_shapes_img(event.target.src);
+                        current_popover = popover;
+
+                    } else {
+
+                        if (small_box != undefined && event.target.id != constants.popoverID && event.target.id != constants.popover_comments) {
+                            small_box.style.display = "none";
+                        }
+                        if (current_popover != undefined && event.target.id !== constants.popoverID && event.target.id != constants.popover_comments) {//null
+                            comment_popover.style.display = "none";
+                            current_popover.style.display = "none";
+                            current_popover = null;
+                        }
                     }
                 }
             });
@@ -550,13 +580,16 @@ window.onload = function () {
                 })
             });
             window.addEventListener("scroll", function (e) {
+                comment_popover.style.display = "none"
                 if (current_popover !== undefined && current_popover.style != null) {
+
                     popover.style.display = "none";
                 }
 
             });
             window.addEventListener("resize", function (e) {
                 if (current_popover !== undefined) {
+                    comment_popover.style.display = "none"
                     small_box.style.display = "none";
                     popover.style.display = "none"
                 }
