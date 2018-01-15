@@ -22,7 +22,8 @@ function initApp() {
         }
         document.getElementById('quickstart-button').disabled = false;
     });
-
+    document.getElementById('switchonoff').addEventListener('click', onoffswitch);
+    document.getElementById('globalimageonoff').addEventListener('click', onoffglobalimage);
     document.getElementById('quickstart-button').addEventListener('click', startSignIn, false);
 }
 
@@ -70,13 +71,31 @@ function startSignIn() {
 
 window.onload = function () {
 
-    var button = document.getElementById('myonoffswitch');
-    var button2 = document.getElementById('myhovershortcutswitch');
 
     chrome.runtime.sendMessage({get_pop_info: true}, function (response) {
-        console.log(button.checked, button2.checked, response)
         /* button.checked=response.sign;
          button2.checked=response.global;*/
+         var toggleswitch = document.getElementById('switchonoff');
+
+         if(response.sign==true){
+            toggleswitch.classList.remove('On');
+            toggleswitch.classList.add('Off');
+         }
+         if(response.sign==false) {
+            toggleswitch.classList.remove('Off');
+            toggleswitch.classList.add('On');
+         }
+
+        var toggleglobalimage = document.getElementById('globalimageonoff');
+
+         if(response.global==true){
+            toggleglobalimage.classList.remove('On');
+            toggleglobalimage.classList.add('Off');
+         }
+         if(response.global==false) {
+            toggleglobalimage.classList.remove('Off');
+            toggleglobalimage.classList.add('On');
+         }
 
         initApp();
     });
@@ -114,4 +133,32 @@ window.onload = function () {
 
 
      })*/
+
 };
+
+function onoffswitch(){
+        var toggleswitch = document.getElementById('switchonoff');
+        if (toggleswitch.classList.contains('On')){
+                toggleswitch.classList.remove('On');
+                toggleswitch.classList.add('Off');
+                
+            } else {
+                toggleswitch.classList.remove('Off');
+                toggleswitch.classList.add('On');
+                
+            }
+}
+
+function onoffglobalimage(){
+        var toggleglobalimage = document.getElementById('globalimageonoff');
+        if (toggleglobalimage.classList.contains('On')){
+                toggleglobalimage.classList.remove('On');
+                toggleglobalimage.classList.add('Off');
+                
+            } else {
+                toggleglobalimage.classList.remove('Off');
+                toggleglobalimage.classList.add('On');
+                
+            }
+}
+
