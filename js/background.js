@@ -52,7 +52,10 @@ chrome.runtime.onMessage.addListener(
                             }
                         });
                     }
-
+                    if (request.task === "save_css") {
+                        // console.log(request,sender)
+                        updateUserCss(firebase.auth().currentUser.email, request, sender.tab.url)
+                    }
                     if (request.task === "save") {
                         // console.log(request,sender)
                         updateUserData(firebase.auth().currentUser.email, request, sender.tab.url)
@@ -180,3 +183,27 @@ function initApp() {
 window.onload = function () {
     initApp();
 };
+function updateUserCss(email, request, site) {
+    var starCountRef = firebase.database().ref('users/' + firebase.auth().currentUser.uid);
+    var updates = {};
+    starCountRef.on('value', function (snapshot) {
+
+        var snap = snapshot.val();
+        if (snap.site == undefined) {
+            snap.site = [];
+        }
+        let ok = 0;
+        updates = snap;
+        for (var img in snap.site) {
+            if (snap.site[img].url === site && snap.site[img].img === request.src) {
+                updates.site[img].css = request.css;
+                ok = 1;
+            }
+        }
+        if (!ok) {
+            updates.site.push({css:request.css})
+        }
+    });
+
+    firebase.database().ref('users/' + firebase.auth().currentUser.uid).update(updates);
+}
