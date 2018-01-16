@@ -782,7 +782,6 @@ window.onload = function () {
 
             window.addEventListener("mouseover", function main_listener(event) {
                 if (remove_listener) {
-                    console.log("inside")
                     // this.removeEventListener('mouseover', arguments.callee);
                 } else {
                     if (event.target.tagName === "IMG" && event.target.id != constants.popoverID) {

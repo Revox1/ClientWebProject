@@ -73,68 +73,68 @@ window.onload = function () {
 
 
     chrome.runtime.sendMessage({get_pop_info: true}, function (response) {
-         var toggleswitch = document.getElementById('switchonoff');
+        var toggleswitch = document.getElementById('switchonoff');
 
-         if(response.sign==true){
+        if (response.sign == true) {
             toggleswitch.classList.remove('On');
             toggleswitch.classList.add('Off');
-         }
-         if(response.sign==false) {
+        }
+        if (response.sign == false) {
             toggleswitch.classList.remove('Off');
             toggleswitch.classList.add('On');
-         }
+        }
 
         var toggleglobalimage = document.getElementById('globalimageonoff');
 
-         if(response.global==true){
+        if (response.global == true) {
             toggleglobalimage.classList.remove('On');
             toggleglobalimage.classList.add('Off');
-         }
-         if(response.global==false) {
+        }
+        if (response.global == false) {
             toggleglobalimage.classList.remove('Off');
             toggleglobalimage.classList.add('On');
-         }
+        }
 
         initApp();
     });
 
 };
 
-function onoffswitch(){
-        var toggleswitch = document.getElementById('switchonoff');
-        if (toggleswitch.classList.contains('On')){
-                toggleswitch.classList.remove('On');
-                toggleswitch.classList.add('Off');
-                chrome.runtime.sendMessage({popover: true,sign:false}, function(response) {
+function onoffswitch() {
+    var toggleswitch = document.getElementById('switchonoff');
+    if (toggleswitch.classList.contains('On')) {
+        toggleswitch.classList.remove('On');
+        toggleswitch.classList.add('Off');
+        chrome.runtime.sendMessage({popover: true, sign: false}, function (response) {
 
-             });
-                
-            } else {
-                toggleswitch.classList.remove('Off');
-                toggleswitch.classList.add('On');
-                chrome.runtime.sendMessage({popover: true,sign:true}, function(response) {
+        });
 
-             });
-                
-            }
+    } else {
+        toggleswitch.classList.remove('Off');
+        toggleswitch.classList.add('On');
+        chrome.runtime.sendMessage({popover: true, sign: true}, function (response) {
+
+        });
+
+    }
 }
 
-function onoffglobalimage(){
-        var toggleglobalimage = document.getElementById('globalimageonoff');
-        if (toggleglobalimage.classList.contains('On')){
-                toggleglobalimage.classList.remove('On');
-                toggleglobalimage.classList.add('Off');
-                chrome.runtime.sendMessage({popover: true,sign:false}, function(response) {
+function onoffglobalimage() {
+    var toggleglobalimage = document.getElementById('globalimageonoff');
+    if (toggleglobalimage.classList.contains('On')) {
+        toggleglobalimage.classList.remove('On');
+        toggleglobalimage.classList.add('Off');
+        chrome.runtime.sendMessage({popover: true, global: false}, function (response) {
 
-             });
-                
-            } else {
-                toggleglobalimage.classList.remove('Off');
-                toggleglobalimage.classList.add('On');
-                chrome.runtime.sendMessage({popover: true,sign:true}, function(response) {
+        });
 
-             });
-                
-            }
+    } else {
+        toggleglobalimage.classList.remove('Off');
+        toggleglobalimage.classList.add('On');
+        chrome.runtime.sendMessage({popover: true, global: true}, function (response) {
+
+        });
+
+    }
 }
 

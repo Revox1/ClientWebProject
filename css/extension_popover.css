@@ -760,7 +760,7 @@ textarea:focus, input:focus {
 .corner_box {
     width: 25px;
     display: none;
-    height: 25px;
-    background-color: red;
+   : 25px;
+    /*background-color: red;*/
     position: absolute;
 }

@@ -7,7 +7,7 @@ var config = {
     messagingSenderId: "554773172307"
 };
 var popup_info = {
-    global: false,
+    global:false,
     sign: true
 };
 firebase.initializeApp(config);
@@ -18,11 +18,14 @@ chrome.runtime.onMessage.addListener(
         if (request.get_pop_info) {
             sendResponse({global: popup_info.global, sign: popup_info.sign});
         } else {
+
             if (request.popover) {
-                if (request.global) {
+                if (request.global!== undefined) {
+                    console.log(request.global)
                     popup_info.global = request.global;
+                    console.log(popup_info.global)
                 }
-                if (request.sign) {
+                if (request.sign !== undefined) {
                     popup_info.sign = request.sign;
                 }
                 chrome.tabs.query({}, function (tabs) {
@@ -65,7 +68,6 @@ chrome.runtime.onMessage.addListener(
                     }
                     if (request.task === "get") {
                         var starCountRef = firebase.database().ref('users');
-                        console.log(starCountRef)
                         var currentSite = {};
                         var globalSite = {};
 
