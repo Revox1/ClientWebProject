@@ -18,12 +18,11 @@ chrome.runtime.onMessage.addListener(
         if (request.get_pop_info) {
             sendResponse({global: popup_info.global, sign: popup_info.sign});
         } else {
-
+            console.log("com1", request)
             if (request.popover) {
                 if (request.global!== undefined) {
-                    console.log(request.global)
                     popup_info.global = request.global;
-                    console.log(popup_info.global)
+
                 }
                 if (request.sign !== undefined) {
                     popup_info.sign = request.sign;
@@ -95,7 +94,7 @@ chrome.runtime.onMessage.addListener(
                             user=firebase.auth().currentUser;
                         }
 
-                        sendResponse({info: user, imgs: currentSite, global: globalSite});
+                        sendResponse({info: user, imgs: currentSite, global: globalSite,global1: popup_info.global,sign:popup_info.sign});
                     }
                 }
             }

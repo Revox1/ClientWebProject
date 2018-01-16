@@ -75,22 +75,22 @@ window.onload = function () {
     chrome.runtime.sendMessage({get_pop_info: true}, function (response) {
         var toggleswitch = document.getElementById('switchonoff');
 
-        if (response.sign == true) {
+        if (response.sign == false) {
             toggleswitch.classList.remove('On');
             toggleswitch.classList.add('Off');
         }
-        if (response.sign == false) {
+        if (response.sign == true) {
             toggleswitch.classList.remove('Off');
             toggleswitch.classList.add('On');
         }
 
         var toggleglobalimage = document.getElementById('globalimageonoff');
 
-        if (response.global == true) {
+        if (response.global == false) {
             toggleglobalimage.classList.remove('On');
             toggleglobalimage.classList.add('Off');
         }
-        if (response.global == false) {
+        if (response.global == true) {
             toggleglobalimage.classList.remove('Off');
             toggleglobalimage.classList.add('On');
         }

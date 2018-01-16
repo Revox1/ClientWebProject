@@ -11,6 +11,7 @@ const constants = {
     imageChangePropModalID: ["modalImage"],
     modal_container_id: "modal_id",
     canvas_id: "canvas1",
+    canvas_id2:"canvas2",
     select_comment_id: "select_comments",
     currentName: "currentName",
     logged: "logged",

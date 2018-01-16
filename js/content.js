@@ -1,4 +1,5 @@
 var remove_listener = false;
+var add_globals = true;
 
 function load_url_for_images(ids, urls) {
     var img;
@@ -290,7 +291,17 @@ function get_info_from_background() {
 
     chrome.runtime.sendMessage({task: "get"}, function (request) {
         console.log(request);
+        if (request.sign === true) {
+            remove_listener = false;
+        } else {
+            remove_listener = true;
+        }
+        if (request.global1 === true) {
+            add_globals = true;
+        } else {
+            add_globals = false;
 
+        }
         changes_to_modal(request);
         if (request.imgs) {
             for (var img_url in request.imgs) {
@@ -371,7 +382,25 @@ function populate_with_comments(src) {
 
             options[e.target.value].classList.add("shown");
         }
+        var canvas = document.getElementById(constants.popoverID).shadowRoot.getElementById(constants.canvas_id2);
+        var context = canvas.getContext('2d');
+        canvas.width = hist.image.width;
+        canvas.height = hist.image.height;
+        hist.clear(canvas, context);
 
+        context.lineWidth = 5;
+        context.strokeStyle = '#10bd04';
+        for (var i = 0; i < hist.globalShapes[hist.image.src][select_comm.value].length - 2; i += 2) {
+
+            context.beginPath();
+            context.moveTo(hist.globalShapes[hist.image.src][select_comm.value][i], hist.globalShapes[hist.image.src][select_comm.value][i + 1]);
+            context.lineTo(hist.globalShapes[hist.image.src][select_comm.value][i + 2], hist.globalShapes[hist.image.src][select_comm.value][i + 3]);
+            context.stroke();
+        }
+        context.beginPath();
+        context.moveTo(hist.globalShapes[hist.image.src][select_comm.value][i], hist.globalShapes[hist.image.src][select_comm.value][i + 1]);
+        context.lineTo(hist.globalShapes[hist.image.src][select_comm.value][0], hist.globalShapes[hist.image.src][select_comm.value][1]);
+        context.stroke();
         document.getElementById(constants.popoverID).shadowRoot.getElementById("canvas_warning").style.display = "none";
     });
 
@@ -435,9 +464,11 @@ function populate_images_with_maps() {
 
             }
 //if he wants
-            for (let shape in hist.globalShapes[img]) {
-                innerhtml += `<area  shape="poly" class="test1" coords="${hist.globalShapes[img][shape]}"  href="${hist.global_urls[img][shape].clicker}">`;
+            if (add_globals) {
+                for (let shape in hist.globalShapes[img]) {
+                    innerhtml += `<area  shape="poly" class="test1" coords="${hist.globalShapes[img][shape]}"  href="${hist.global_urls[img][shape].clicker}">`;
 
+                }
             }
             innerhtml += "</map>";
 
@@ -558,19 +589,24 @@ chrome.runtime.onMessage.addListener(
             } else {
                 remove_listener = false;
             }
-            if (request.global) {
-                // window.removeEventListener("mouseover",main_listener)
+            if (request.global === true) {
+                add_globals = true;
+            } else {
+                add_globals = false;
+
             }
-            console.log(remove_listener)
-        } else {
+            get_info_from_background();
+        }
+        else {
             changes_to_modal(request);
 
             get_info_from_background();
         }
-        // window.location.reload(true)
+// window.location.reload(true)
 
 
-    });
+    })
+;
 
 function changes_to_modal(request) {
     if (typeof request != "undefined" && typeof request.info != "undefined" && request.info) {
@@ -720,15 +756,23 @@ function add_listener_for_submit_button() {
                 var text_area = document.getElementById(constants.popoverID).shadowRoot.getElementById("textarea_id");
                 var select = document.getElementById(constants.popoverID).shadowRoot.getElementById("select_comments");
                 var current_option = select.options[select.selectedIndex].value;
-                console.log(current_option)
+
+                var data=new Date()
                 if (current_option != "default") {
                     if (hist.globalComments[hist.image.src]) {
                         if (hist.globalComments[hist.image.src][current_option]) {
                             hist.globalComments[hist.image.src][current_option].push({
                                 comment: text_area.value,
                                 email: hist.currentUser.email,
-                                data: (new Date()).toString()
+                                data: data.toDateString()
                             })
+                        }else{
+                            hist.globalComments[hist.image.src][current_option] = [];
+                            hist.globalComments[hist.image.src][current_option].push({
+                                comment: text_area.value,
+                                email: hist.currentUser.email,
+                                data: data.toDateString()
+                            });
                         }
 
                     } else {
@@ -737,7 +781,7 @@ function add_listener_for_submit_button() {
                         hist.globalComments[hist.image.src][current_option].push({
                             comment: text_area.value,
                             email: hist.currentUser.email,
-                            data: (new Date()).toString()
+                            data: data.toString()
                         });
 
                     }
