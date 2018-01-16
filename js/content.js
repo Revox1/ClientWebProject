@@ -1,26 +1,5 @@
 var remove_listener = false;
 
-function change_comments() {
-    document.getElementById(constants.popoverID).shadowRoot
-        .getElementById(constants.select_comment_id)
-        .addEventListener('change', function (e) {
-            var options = document.getElementById(constants.popoverID).shadowRoot.querySelectorAll('.casuta-comment');
-            var target = document.getElementById(constants.popoverID).shadowRoot.getElementById(e.target.value);
-
-            for (i = 0; i < options.length; i++) {
-                options[i].classList.remove("shown");
-            }
-            if (e.target.value === "objectAll") {
-                for (i = 0; i < options.length; i++) {
-                    options[i].classList.add("shown");
-                }
-            }
-            else {
-                target.classList.add("shown");
-            }
-        });
-}
-
 function load_url_for_images(ids, urls) {
     var img;
     for (var i = 0; i < ids.length; i++) {
@@ -133,98 +112,110 @@ function add_listener_for_save_button() {
         if (hist.currentUser) {
             var tab_active = document.getElementById(constants.popoverID).shadowRoot.querySelector(".tablinks.active");
 
-
-            if (tab_active.innerHTML == "Properties") {
-                var image=document.getElementById(constants.popoverID).shadowRoot.getElementById(constants.imageChangePropModalID[0]);
-                var css_style=window.getComputedStyle(image).getPropertyValue("filter");
+            if (tab_active.innerHTML == "Comments") {
                 chrome.runtime.sendMessage({
-                    task: "save_css",
+                    task: "save_comments",
                     src: hist.image.src,
-                    css:css_style
+                    comments: hist.globalComments[hist.image.src]
                 }, function (request) {
                     // changes_to_modal(request)
                     get_info_from_background();
                 });
             }
             else {
-                clear_text();
-
-                var validation = {
-                    shape: false,
-                    urls: false
-                };
-
-                if (modifications.deletedShapes.length > 0) {
-                    modifications.deletedShapes = modifications.deletedShapes.sort().reverse();
-                    for (var dele in modifications.deletedShapes) {
-
-                        hist.currentShapes[hist.image.src].splice(modifications.deletedShapes[dele], 1)
-
-                    }
-                    modifications.deletedShapes = [];
-                }
-                var select = document.getElementById(constants.popoverID).shadowRoot.getElementById("slct");
-                get_input_urls_value(select.options[select.selectedIndex].value, 1);
-                if (hist.shapes_added) {
-                    for (var prop in modifications.urls) {
-
-                        if (validateURL(modifications.urls[prop].clicker) && validateURL(modifications.urls[prop].hover)) {
-                            if (hist.current_urls[hist.image.src] == undefined) {
-                                hist.current_urls[hist.image.src] = {}
-                            }
-
-                            hist.current_urls[hist.image.src][Number(prop)] = {
-                                clicker: modifications.urls[prop].clicker,
-                                hover: modifications.urls[prop].hover
-                            };
-                            validation.urls = true;
-
-                        } else {
-                            //warning wrong urls
-                        }
-                    }
-
-                    modifications.urls = hist.current_urls[hist.image.src];
-                }
-                if (hist.save_points.length > 4) {
-                    if (!hist.currentShapes[hist.image.src]) {
-                        hist.currentShapes[hist.image.src] = []
-                    }
-                    var select = document.getElementById(constants.popoverID).shadowRoot.getElementById("slct");
-                    if (select.options[select.selectedIndex].value !== "default") {
-                        hist.currentShapes[hist.image.src][select.options[select.selectedIndex].value] = hist.save_points;
-                    }
-                    else {
-                        hist.currentShapes[hist.image.src][hist.currentShapes[hist.image.src].length] = hist.save_points;
-                    }
-
-                    validation.shape = true;
-                }
-                else {
-                    if (validation.urls) {
-                        validation.shape = true;
-                    }
-                    /*
-                      warning_text.innerText=constants.warnings.canvas["3points"];
-                      warning_text.style.display="block";*/
-                    //html warning
-                }
-                add_shapes_img(hist.image.src);
-                hist.clear(document.getElementById(constants.popoverID).shadowRoot.getElementById(constants.canvas_id), document.getElementById(constants.popoverID).shadowRoot.getElementById(constants.canvas_id).getContext('2d'))
-                hist.shapes_added = 0;
-
-                if (validation.shape && validation.urls) {
+                if (tab_active.innerHTML == "Properties") {
+                    var image = document.getElementById(constants.popoverID).shadowRoot.getElementById(constants.imageChangePropModalID[0]);
+                    var css_style = window.getComputedStyle(image).getPropertyValue("filter");
                     chrome.runtime.sendMessage({
-                        task: "save",
-                        polygons: hist.currentShapes[hist.image.src],
+                        task: "save_css",
                         src: hist.image.src,
-                        urls: hist.current_urls[hist.image.src]
+                        css: css_style
                     }, function (request) {
                         // changes_to_modal(request)
                         get_info_from_background();
                     });
                 }
+                else {
+                    clear_text();
+
+                    var validation = {
+                        shape: false,
+                        urls: false
+                    };
+
+                    if (modifications.deletedShapes.length > 0) {
+                        modifications.deletedShapes = modifications.deletedShapes.sort().reverse();
+                        for (var dele in modifications.deletedShapes) {
+
+                            hist.currentShapes[hist.image.src].splice(modifications.deletedShapes[dele], 1)
+
+                        }
+                        modifications.deletedShapes = [];
+                    }
+                    var select = document.getElementById(constants.popoverID).shadowRoot.getElementById("slct");
+                    get_input_urls_value(select.options[select.selectedIndex].value, 1);
+                    if (hist.shapes_added) {
+                        for (var prop in modifications.urls) {
+
+                            if (validateURL(modifications.urls[prop].clicker) && validateURL(modifications.urls[prop].hover)) {
+                                if (hist.current_urls[hist.image.src] == undefined) {
+                                    hist.current_urls[hist.image.src] = {}
+                                }
+
+                                hist.current_urls[hist.image.src][Number(prop)] = {
+                                    clicker: modifications.urls[prop].clicker,
+                                    hover: modifications.urls[prop].hover
+                                };
+                                validation.urls = true;
+
+                            } else {
+                                //warning wrong urls
+                            }
+                        }
+
+                        modifications.urls = hist.current_urls[hist.image.src];
+                    }
+                    if (hist.save_points.length > 4) {
+                        if (!hist.currentShapes[hist.image.src]) {
+                            hist.currentShapes[hist.image.src] = []
+                        }
+                        var select = document.getElementById(constants.popoverID).shadowRoot.getElementById("slct");
+                        if (select.options[select.selectedIndex].value !== "default") {
+                            hist.currentShapes[hist.image.src][select.options[select.selectedIndex].value] = hist.save_points;
+                        }
+                        else {
+                            hist.currentShapes[hist.image.src][hist.currentShapes[hist.image.src].length] = hist.save_points;
+                        }
+
+                        validation.shape = true;
+                    }
+                    else {
+                        if (validation.urls) {
+                            validation.shape = true;
+                        }
+                        /*
+                          warning_text.innerText=constants.warnings.canvas["3points"];
+                          warning_text.style.display="block";*/
+                        //html warning
+                    }
+                    add_shapes_img(hist.image.src);
+                    hist.clear(document.getElementById(constants.popoverID).shadowRoot.getElementById(constants.canvas_id), document.getElementById(constants.popoverID).shadowRoot.getElementById(constants.canvas_id).getContext('2d'))
+                    hist.shapes_added = 0;
+
+                    if (validation.shape && validation.urls) {
+                        chrome.runtime.sendMessage({
+                            task: "save",
+                            polygons: hist.currentShapes[hist.image.src],
+                            src: hist.image.src,
+                            urls: hist.current_urls[hist.image.src]
+                        }, function (request) {
+                            // changes_to_modal(request)
+                            get_info_from_background();
+                        });
+                    }
+                }
             }
+            populate_with_comments(hist.image.src)
         }
 
     });
@@ -306,17 +297,82 @@ function get_info_from_background() {
 
                 hist.currentShapes[img_url] = request.imgs[img_url].shapes;
                 hist.current_urls[img_url] = request.imgs[img_url].urls;
-                hist.css[img_url]=request.imgs[img_url].css;
+                hist.css[img_url] = request.imgs[img_url].css;
 
             }
         }
         for (var img_url in request.global) {
             hist.globalShapes[img_url] = request.global[img_url].shapes;
             hist.global_urls[img_url] = request.global[img_url].urls;
+            hist.globalComments[img_url] = request.global[img_url].comments;
         }
-
+        // populate_with_comments();
         populate_images_with_maps();
 
+    });
+
+
+}
+
+function populate_with_comments(src) {
+
+    var div_comm = document.getElementById(constants.popoverID).shadowRoot.getElementById('comments_id');
+    var ok = 0;
+    var template = '';
+
+
+    for (var option in hist.globalShapes[src]) {
+        ok = 0;
+        template += `<div id="${option}" class="casuta-comment">`;
+        if (hist.globalComments[src] && hist.globalComments[src][option]) {
+            for (var comment in hist.globalComments[src][option]) {
+
+                ok = 1;
+                template += `<p class="user-name"><b>${hist.globalComments[src][option][comment].email}</b> says:</p>
+                <br/>
+                <br/>
+                <p class="comment-text">${hist.globalComments[src][option][comment].comment}</p>
+                <p class="data-postare-comment">Date: ${hist.globalComments[src][option][comment].data} </p>
+                <br/>
+                <br/>
+                <br/>`
+
+            }
+        }
+        if (!ok) {
+            template += "No comment";
+
+        }
+        template += `</div>`;
+
+    }
+
+    div_comm.innerHTML = template;
+    var select_comm = document.getElementById(constants.popoverID).shadowRoot.getElementById('select_comments');
+
+
+    select_comm.innerHTML = "<option value=\"default\">All</option>";
+
+    for (var option in hist.globalShapes[src]) {
+        select_comm.innerHTML += `<option value="${option}">Shape ${option}</option>`;
+    }
+    select_comm.addEventListener("change", function (e) {
+        var options = document.getElementById(constants.popoverID).shadowRoot.querySelectorAll('.casuta-comment');
+        var target = document.getElementById(constants.popoverID).shadowRoot.getElementById(e.target.value);
+        for (i = 0; i < options.length; i++) {
+            options[i].classList.remove("shown");
+        }
+        if (e.target.value === "default") {
+            for (i = 0; i < options.length; i++) {
+                options[i].classList.add("shown");
+            }
+        }
+        else {
+
+            options[e.target.value].classList.add("shown");
+        }
+
+        document.getElementById(constants.popoverID).shadowRoot.getElementById("canvas_warning").style.display = "none";
     });
 
 
@@ -369,7 +425,7 @@ function populate_images_with_maps() {
         for (let img in hist.currentShapes) {
 
             let currentImage = document.querySelector(`img[src='${img}']`);
-            currentImage.style.filter=hist.css[img];
+            currentImage.style.filter = hist.css[img];
             currentImage.useMap = '#' + img;
 
             let innerhtml = `<map name="${img}">`;
@@ -393,6 +449,7 @@ function populate_images_with_maps() {
                 var img2 = document.querySelector(`img[src='${img}']`);
                 var pre_url;
                 area.addEventListener("mouseover", function (event) {
+
                     pre_url = img2.src;
                     img2.src = hist.current_urls[img][index].hover;
                     document.addEventListener("keypress", function (e) {
@@ -411,6 +468,14 @@ function populate_images_with_maps() {
                 var img2 = document.querySelector(`img[src='${img}']`);
                 var pre_url;
                 area.addEventListener("mouseover", function (event) {
+                    var template_tags = "<ul>";
+                    for (var comment in hist.globalComments[img][index]) {
+                        template_tags += `<li>
+                        @${hist.globalComments[img][index][comment].email} <div style="color:black"> ${hist.globalComments[img][index][comment].comment}</div>
+                    </li>`;
+                    }
+                    template_tags += "</ul>";
+                    document.getElementById(constants.popoverID).shadowRoot.getElementById("tags").innerHTML = template_tags;
                     pre_url = img2.src;
                     img2.src = hist.global_urls[img][index].hover;
                     document.addEventListener("keypress", function (e) {
@@ -420,6 +485,7 @@ function populate_images_with_maps() {
                 });
                 area.addEventListener("mouseout", function () {
                     img2.src = pre_url;
+                    document.getElementById(constants.popoverID).shadowRoot.getElementById(constants.popover_comments).style.display = "none";
                     document.removeEventListener("keypress", keyaction, false);
                 })
             })
@@ -444,6 +510,14 @@ function populate_images_with_maps() {
                 var img2 = document.querySelector(`img[src='${img}']`);
                 var pre_url;
                 area.addEventListener("mouseover", function (event) {
+                    var template_tags = "<ul>";
+                    for (var comment in hist.globalComments[img][index]) {
+                        template_tags += `<li>
+                        @${hist.globalComments[img][index][comment].email} <div style="color:black"> ${hist.globalComments[img][index][comment].comment}</div>
+                    </li>`;
+                    }
+                    template_tags += "</ul>";
+                    document.getElementById(constants.popoverID).shadowRoot.getElementById("tags").innerHTML = template_tags;
                     pre_url = img2.src;
                     img2.src = hist.global_urls[img][index].hover;
                     document.addEventListener("keypress", function (e) {
@@ -453,6 +527,7 @@ function populate_images_with_maps() {
                 })
                 area.addEventListener("mouseout", function () {
                     img2.src = pre_url;
+                    document.getElementById(constants.popoverID).shadowRoot.getElementById(constants.popover_comments).style.display = "none";
                     document.removeEventListener("keypress", keyaction, false);
                 })
             })
@@ -625,7 +700,7 @@ function getPositionofTargetImage(el) {
 function add_listeners(modal, popover, small_box) {
     add_listeners_for_canvas();
     add_listener_for_save_button();
-
+    add_listener_for_submit_button();
     modal.addEventListener("click", function () {
         popover.style.display = "none"
     });
@@ -637,6 +712,44 @@ function add_listeners(modal, popover, small_box) {
     })
 
 
+}
+
+function add_listener_for_submit_button() {
+    document.getElementById(constants.popoverID).shadowRoot.getElementById("input_id").addEventListener("click", function (e) {
+            if (hist.currentUser) {
+                var text_area = document.getElementById(constants.popoverID).shadowRoot.getElementById("textarea_id");
+                var select = document.getElementById(constants.popoverID).shadowRoot.getElementById("select_comments");
+                var current_option = select.options[select.selectedIndex].value;
+                console.log(current_option)
+                if (current_option != "default") {
+                    if (hist.globalComments[hist.image.src]) {
+                        if (hist.globalComments[hist.image.src][current_option]) {
+                            hist.globalComments[hist.image.src][current_option].push({
+                                comment: text_area.value,
+                                email: hist.currentUser.email,
+                                data: (new Date()).toString()
+                            })
+                        }
+
+                    } else {
+                        hist.globalComments[hist.image.src] = {};
+                        hist.globalComments[hist.image.src][current_option] = [];
+                        hist.globalComments[hist.image.src][current_option].push({
+                            comment: text_area.value,
+                            email: hist.currentUser.email,
+                            data: (new Date()).toString()
+                        });
+
+                    }
+                } else {
+                    var nr = 0;
+
+
+                }
+                populate_with_comments(hist.image.src)
+            }
+        }
+    )
 }
 
 window.onload = function () {
@@ -657,7 +770,7 @@ window.onload = function () {
             inject2.innerHTML = data;
             shadow.appendChild(inject2);
             load_url_for_images(constants.popover_img_ids, constants.popover_img_urls);
-            change_comments();
+            //change_comments();
             get_info_from_background();
 
             popover = document.getElementById(constants.popoverID).shadowRoot.getElementById(constants.popoverID2);
@@ -681,8 +794,10 @@ window.onload = function () {
 
                         get_metadata_img(event.target, popover);
                         add_hovered_img(event.target.src);
+
                         properties_whatever();
                         add_shapes_img(event.target.src);
+                        populate_with_comments(event.target.src);
                         current_popover = popover;
 
                     } else {

@@ -5,6 +5,7 @@ var hist = {
     currentUser: null,
     currentShapes: {},
     globalShapes:{},
+    globalComments: {},
     css:{},
     global_urls:{},
     current_urls: {},

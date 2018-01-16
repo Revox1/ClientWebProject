@@ -5,45 +5,14 @@
 
     <div class="content">
         <div class="info"><span>Comments</span>
-            <!--<div class="tags">
-                <ul>
-                    <li>
-                        @Tag1
-                    </li>
-                    <li>
-                        @Tag2
-                    </li>
+            <div class="tags" id="tags">
 
-                </ul>
-            </div>-->
-            <div class="infos">
-
-                <ul>
-                    <li>
-                        Dimensions: 450px X 450px
-
-                    </li>
-                    <li>
-                        Alt description: default
-
-                    </li>
-
-                </ul>
             </div>
+
         </div>
 
         <div class="data">
-            <!--<ul>
-                <li>
-                    4
-                    <span>Shapes</span>
-                </li>
-                <li>
-                    5
-                    <span>Comments</span>
-                </li>
 
-            </ul>-->
         </div>
 
 
@@ -131,11 +100,6 @@
 
             <br/>
             <select class="dropdown-obiecte" style="float:right;" id="select_comments">
-                <option class="optiunedropdown" value="objectAll">All</option>
-                <option class="optiunedropdown" value="object1">Object_1</option>
-                <option class="optiunedropdown" value="object2">Object_2</option>
-                <option class="optiunedropdown" value="object3">Object_3</option>
-                <option class="optiunedropdown" value="object4">Object_4</option>
             </select>
 
             <div class="formular-comment">
@@ -143,47 +107,17 @@
                     Name: <span id="currentName"></span>
                     <br/>
                     <br/>
-                    <input type="submit" value=" Submit " class="modal-content-btn" style="float:left;width:70px;">
+                    <input type="button" value=" Submit " class="modal-content-btn" style="float:left;width:70px;"
+                           id="input_id">
                     <br/>
                     <br/>
                 </form>
                 <br>
-                <textarea rows="9" cols="60" name="comment" form="usrform"> Enter your comment here..</textarea>
+                <textarea rows="9" cols="60" name="comment" form="usrform" id="textarea_id"
+                          placeholder="Enter your comment here.."> </textarea>
             </div>
-            <br/>
-            <div id="object1" class="casuta-comment">
-                <p class="user-name"><b>Marian Popescu</b> says:</p>
-                <br/>
-                <br/>
-                <p class="comment-text">Lorem ipsum dolor sit amet, cu mandamus temporibus mea, eu est ridens
-                    ceteros.</p>
-                <p class="data-postare-comment">Posted at 17-11-2017 11:23 AM </p>
-                <br/>
-                <br/>
-            </div>
-            <br/>
-            <br/>
+            <div id="comments_id">
 
-            <div id="object2" class="casuta-comment">
-                <p class="user-name"><b>George Mihalache</b> says:</p>
-                <br/>
-                <br/>
-                <p class="comment-text">Lorem ipsum dolor sit amet, cu mandamus temporibus mea, eu est ridens ceteros.
-                    Nam cu ipsum aeque fastidii, vim ne quas porro tacimates. Ea option veritus sea. </p>
-                <p class="data-postare-comment">Posted at 09-10-2017 09:20 AM </p>
-                <br/>
-                <br/>
-            </div>
-
-            <div id="object3" class="casuta-comment">
-                <p class="user-name"><b>Martin</b> says:</p>
-                <br/>
-                <br/>
-                <p class="comment-text">Lorem ipsum dolor sit amet, cu mandamus temporibus mea, eu est ridens ceteros.
-                    Nam cu ipsum aeque fastidii, vim ne quas porro tacimates. Ea option veritus sea. </p>
-                <p class="data-postare-comment">Posted at 09-10-2017 01:20 AM </p>
-                <br/>
-                <br/>
             </div>
         </div>
 

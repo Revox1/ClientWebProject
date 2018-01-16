@@ -52,6 +52,9 @@ chrome.runtime.onMessage.addListener(
                             }
                         });
                     }
+                    if (request.task === "save_comments") {
+                        updateGlobalComments(firebase.auth().currentUser.email, request, sender.tab.url)
+                    }
                     if (request.task === "save_css") {
                         // console.log(request,sender)
                         updateUserCss(firebase.auth().currentUser.email, request, sender.tab.url)
@@ -97,6 +100,28 @@ chrome.runtime.onMessage.addListener(
         }
     });
 
+function updateGlobalComments(email, request, site) {
+    console.log("com", request)
+    var starCountRef = firebase.database().ref('users/global');
+    var updates = {};
+    starCountRef.on('value', function (snapshot) {
+
+        var snap = snapshot.val();
+        if (snap.site == undefined) {
+            snap.site = [];
+        }
+        updates = snap;
+        for (var img in snap.site) {
+            if (snap.site[img].url === site && snap.site[img].img === request.src) {
+                updates.site[img].comments = request.comments;
+
+            }
+        }
+
+    });
+
+    firebase.database().ref('users/global').update(updates);
+}
 function writeUserData(email) {
     firebase.database().ref('users/' + firebase.auth().currentUser.uid).set({
         site: [], //  site: [{url: null, img: null, shapes: []}],
